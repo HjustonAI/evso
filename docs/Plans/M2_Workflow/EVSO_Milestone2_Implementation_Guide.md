@@ -10,6 +10,7 @@
 
 ## Spis treści
 
+0. [**Stan implementacji i decyzje wykonawcze (LIVE STATUS)**](#0-stan-implementacji-i-decyzje-wykonawcze-live-status) ← read-first dla agenta wdrażającego
 1. [Cele — mapping na 7 kryteriów sukcesu](#1-cele--mapping-na-7-kryteriów-sukcesu)
 2. [Architektura wysokopoziomowa](#2-architektura-wysokopoziomowa)
 3. [Zmiany w ClickUp (additive)](#3-zmiany-w-clickup-additive)
@@ -19,6 +20,98 @@
 7. [Roll-out plan](#7-roll-out-plan)
 8. [Operability runbook](#8-operability-runbook)
 9. [Mapping success criteria → sekcja → test case](#9-mapping-success-criteria--sekcja--test-case)
+
+---
+
+## 0. Stan implementacji i decyzje wykonawcze (LIVE STATUS)
+
+> **Sekcja read-first dla agenta wdrażającego.** Aktualizowana po każdym P-level'u w roadmap'ie 0.3.
+>
+> **Ostatnia aktualizacja:** 2026-05-12 (po Phase 1 + Phase 2 smoke PASS).
+> **Plan wykonawczy szczegółowy:** `C:\Users\Barte\.claude\plans\napisa-em-twoje-uwagi-do-elegant-iverson.md` (21 ponumerowanych kroków P0–P4).
+
+### 0.1 Status per Etap (sekcja 7)
+
+| Etap | Status | Co zrobione | Co pozostało |
+|---|---|---|---|
+| **Etap 0 — Pre-rekwizyty** | **DONE (test env)** | 0a: IP6 ścieżki A i B obie przetestowane. Wybór: `comment_path = A_COMMENT`. Test task `86c9q2apn` / LEAD-10118. 0b: pominięty (decyzja: Make+Anthropic baseline, ClickUp AI Fields out-of-scope w v1). 0d: ops cap OK. | 0c: forward Dhosting dla pilot brand'u — czeka na P4. |
+| **Etap 1 — Setup data model** | **DONE (test env)** | 1a: 6 CF M2 dodane na `NOWE ZAPYTANIA TESTOWY` (list ID `901522503871`). 1b: 3/4 widoki utworzone (pominięto `Do weryfikacji — typ zapytania` — KLASYFIKACJA_AI nie wypełniane do P1.7). 1c: A2 i A3 PASS, **A1 DISABLED** (rebuild w P3.15 — patrz D6). 1d: Data Stores `m2_message_ledger` (klucz Message-ID) + `m2_shadow_counter` (klucz brand) utworzone. | 1e: dodać rekord `m2_shadow_counter` `{brand:"test", auto_match_count:0, shadow_sample_count:0, started_at:now}` (P2.13 prereq). |
+| **Etap 2 — Make scenariusze** | **IN PROGRESS — smoke PASS, pełna implementacja P0–P3** | 2a/2b smoke: scenariusz `EVSO - M2 Email Intake [TEST]` ma Gmail Watch + idempotency ledger + deterministyczny match po EMAIL (Text Aggregator hack) + Create Task w no-match. Wszystkie Phase 2 smoke testy PASS. | P0–P3 z roadmap'u 0.3. 2c (matcher prompt v1.0), 2d (Title Suggestion), 2e (blueprint export) — nie zrobione. |
+| **Etap 3 — Test Sx-by-Sx** | TODO | — | Pełen test suite T3.1–T3.13 + T3.E1–E3 po P3 (gate do Etap 4). |
+| **Etap 4 — Pilot brand'u** | TODO | — | DPA, forward Dhosting, klon scenariusza M2 do produkcji, shadow mode start. |
+| **Etap 5–7** | TODO | — | Empiryczna kalibracja, multi-brand roll-out, stabilizacja. |
+
+### 0.2 Decyzje wykonawcze (BINDING — nie zmieniać bez re-testu)
+
+| # | Decyzja | Uzasadnienie | Wpływ na sekcje |
+|---|---|---|---|
+| **D1** | `comment_path = A_COMMENT` — w Make używamy `ClickUp > Post a Task Comment` (NIE `Email > Send an Email` SMTP do `<id>@mg.clickup.com`). | Etap 0a empiryczny test PASS. Biznesowe wymaganie: wystarczy mail klienta w Activity taska, bez preserve email-thread format. Fallback B (SMTP) projektowany jako rollback w Etap 4. | §2.3 IP6, §4.1 sub-branch B.2.6.A, §2.4 S2. |
+| **D2** | `Sequential processing = TRUE` w Settings scenariusza M2 Email Intake. | Invariant guide §4.1 + adversarial A9. Bez tego race-helper (Moduł 6) jest niewystarczający. | §4.1 Scenario settings. P0.1 w roadmap. |
+| **D3** | Wyszukiwanie kandydatów po `EMAIL` Custom Field przez `ClickUp > Make an API call` (REST `GET /api/v2/team/{team_id}/task?custom_fields=...`) — **NIE** natywny `List filtered tasks`. | Natywny `List filtered tasks` nie udostępnia w UI filtra po Custom Field z explicit equality operator. Pusta tablica z natywnego modułu może nie tworzyć bundle (gałąź no-match w router'ze nie odpaliłaby się deterministycznie). API call z JSON filter daje pełną kontrolę. | §4.1 Moduł 5 + Moduł 7.2. P0.2 w roadmap. |
+| **D4** | Operator filtra `=` (equals) w ClickUp API `custom_fields` parameter; empiryczna weryfikacja exact-vs-contains w P0.3. | ClickUp REST API doc: `=` to equals dla pola EMAIL custom field type. Pracownik wdrażający sugerował `==`, ale `==` to ClickUp-UI styl. P0.3 weryfikuje empirycznie (`bart@example.com` vs `bartek@example.com`). Worst case: dodajemy post-filter Iterator+Filter. | §4.1 Moduł 5 + P0.3 roadmap. |
+| **D5** | Klasyfikator Phase 1 jako wspólny moduł HTTP (referencja w git, nie kopia w scenariuszu M2). | §5.3 + invariant H2 CLAUDE.md. Jedno źródło prawdy, drift impossible. | §4.1 Branch B.1.1, B.2.6.B, B.2.6.C, B.2.6.D. |
+| **D6** | A1 Automation rebuild: `Comment added → @mention assignee` (NIE `Add comment` jako action). | Wcześniejsza próba `Comment added → Add comment` tworzy pętlę rekurencyjną. Decyzja: zachowany trigger, zmieniona akcja na @mention/notify. | §3.4 A1. P3.15 w roadmap. Obecnie DISABLED. |
+| **D7** | Implikacja D1: **handlowiec MUSI odpowiadać przez ClickUp Email composer** (Email tab → Reply lub Send Email z taska). NIGDY przez Add Comment, Edit Description, ani bezpośrednio z Gmail. | Bez tego K3 (pełna historia) i K4 (cały kontakt w ClickUp) są złamane przy `comment_path = A_COMMENT`. | §8 runbook (do dopisania w P4.18). |
+| **D8** | Top-up plan użytkownika z 2026-05-12: zachować obecny scenariusz smoke jako baseline rollback (nie kasować, nie nadpisywać). Wszystkie P0–P3 modyfikacje na klonie lub w nim z dokumentacją zmian. | Pełen rollback safety przy każdym P-level'u — jeśli któryś krok złamie scenariusz, wracamy do ostatniego znanego dobrego stanu. | Operacyjnie wszystkie §4.1 zmiany. |
+
+### 0.3 Roadmap wykonawczy (P0 → P4)
+
+Pełen 21-stopniowy roadmap: `C:\Users\Barte\.claude\plans\napisa-em-twoje-uwagi-do-elegant-iverson.md`. Skrót:
+
+| Priorytet | Cel | Kluczowe kroki | Sekcja guide'a | Gate testowy |
+|---|---|---|---|---|
+| **P0 — Fundament** | Fix race condition + EMAIL custom field lookup | **P0.1** Sequential processing TRUE • **P0.2** `Make an API call` z filtrem `EMAIL = from_email_lower` • **P0.3** empiryczna weryfikacja operatora `=` | §4.1 Scenario settings + Moduł 5 | T3.11 (race) + exact-match test |
+| **P1 — Użyteczność** | Auto-reply filter + Phase 1 klasyfikator w gałęzi no-match | **P1.4** pre-filter headers (defensywny `ifempty()`) • **P1.5** HTTP do Anthropic z Phase 1 prompt'em • **P1.6** POZYSKANIE inferencja • **P1.7** wzbogacenie Create Task + konwencja tytułu | §4.1 Moduł 2 + Branch B.1 + §5.3 | T3.12 (auto-reply) + T3.6 (nieznany pełny) |
+| **P2 — AI Matcher** | Implementacja centralnej funkcji M2 | **P2.8** P2 prefilter LAST_EMAIL_AT • **P2.9** Iterator/Aggregator + anti-primacy shuffle • **P2.10** HTTP matcher (system prompt v1.0) • **P2.11** response validation • **P2.12** Router B 4 sub-branches • **P2.13** shadow counter • **P2.14** race-helper Moduł 6 | §4.1 Branch B.2 + §5.1 + §5.2 + §3.5.2 | T3.2, T3.3, T3.4, T3.5, T3.9, T3.13 |
+| **P3 — Notif + secondary + errors** | A1 push + Title Suggestion + scenario-level error handler | **P3.15** A1 rebuild • **P3.16** Title Suggestion scenariusz • **P3.17** scenario error handler | §3.4 A1 + §4.2 + §4.1 Moduł 9 | T3.E1 + A1 push działa + Title <30s |
+| **P4 — Pre-pilot** | Runbook outbound invariant + pełen test suite + cleanup + blueprint | **P4.18** IP6 outbound invariant w runbook'u • **P4.19** T3.1–T3.13 + E1-E3 • **P4.20** smoke cleanup • **P4.21** blueprint export | §8 + §6 + §4.3 + §6.4 | 100% T3.x PASS, runbook w gicie, blueprint w gicie |
+
+### 0.4 Stan techniczny test environment (źródło prawdy dla ID-ków)
+
+| Komponent | Identyfikator | Stan |
+|---|---|---|
+| ClickUp Workspace | `EVSO` (ID `9015890695`) | Aktywny |
+| ClickUp Space | `EVSO` (ID `90153314249`) | Aktywny |
+| ClickUp Folder | `TESTOWY` (ID `901513877375`) | Aktywny |
+| ClickUp List (test) | `NOWE ZAPYTANIA TESTOWY` (ID `901522503871`) | Aktywny, 6 CF M2 dodane |
+| Custom Field `EMAIL` | ID `d8265463-2ae5-4239-9126-e021a0d121fa` | Dziedziczone z Phase 1 |
+| Custom Field `LAST_EMAIL_AT` | ID `78419d48-2388-47e9-ba17-bc06b81e8254` | Dodane w Etap 1 |
+| Custom Fields M2 pozostałe | `MATCHING_CONFIDENCE`, `MATCHING_DECISION`, `MATCHING_REASONING`, `SHADOW_REVIEW_NEEDED`, `SUGEROWANY_TYTUŁ_MAILA` | Field IDs do uzupełnienia po stronie wdrażającego (Make blueprint mapping) |
+| Gmail testowy inbox | `automatyzacjaevso@gmail.com`, label `M2-intake` | Aktywny |
+| Make scenariusz | `EVSO - M2 Email Intake [TEST]` | Aktywny — smoke PASS (deterministyczny EMAIL match) |
+| Make Data Store ledger | `m2_message_ledger` (storage 9 MB, klucz `message_id` = Header `Message-ID`) | Aktywny, ma testowe rekordy |
+| Make Data Store shadow counter | `m2_shadow_counter` (storage 1 MB, klucz `brand`) | Utworzony, **rekord testowy `brand=test` TODO (1e)** |
+| ClickUp Automation A2 | Trigger: `MATCHING_DECISION = escalated-need-confirm` → Action: Priority=Urgent + comment | Aktywna, PASS |
+| ClickUp Automation A3 | Trigger: `SHADOW_REVIEW_NEEDED = true` → Action: comment | Aktywna, PASS |
+| ClickUp Automation A1 | (Comment added → @mention assignee) | **DISABLED** — rebuild w P3.15 (D6) |
+
+### 0.5 Korekty nazewnictwa modułów (aktualnie istniejące w Make ClickUp connector)
+
+Niektóre nazwy w guide'cie §4.1–4.2 to terminologia generyczna. Implementing agent używa konkretnych nazw modułów z aktualnego Make UI:
+
+| Generyczna nazwa w guide'cie | Aktualny moduł Make | Lokalizacja w guide'cie |
+|---|---|---|
+| `ClickUp > Search Tasks` | `ClickUp > Make an API call` (REST `GET /api/v2/team/{team_id}/task` z `custom_fields=` query param zawierającym JSON filter; `space_ids[]`, `folder_ids[]`, `list_ids[]`, `include_closed=false`) | §4.1 Moduł 5 + Moduł 7.2 (re-search) |
+| `ClickUp > Add a Comment to a Task` | `ClickUp > Post a Task Comment` | §4.1 sub-branch B.2.6.A |
+| `ClickUp > Update a Task` | `ClickUp > Edit a Task` (lub `Edit a Task with Custom Fields` jeśli edytowane są **wyłącznie** CF — dokładnie identyfikuje pola po Field ID) | §4.1 sub-branch B.2.6.A / B.2.6.B / B.2.6.C / B.2.6.D + shadow logic |
+| `Flow Control > End scenario` | **Nie istnieje natywnie.** Wzorzec: branch kończy się bez kolejnych modułów po ostatnim akcji (np. ledger write `outcome=auto-reply-dropped` jest ostatnim modułem w branch'u "drop"; Make automatycznie zakańcza route). Alternatywa: `Tools > Switch` z `false` na default branch'u efektywnie skraca dalsze przetwarzanie. | §4.1 Branch "drop" auto-reply (Moduł 2.2) i "duplicate-skipped" (Moduł 4 ścieżka duplicate) |
+
+Pozostałe moduły wymienione w §4.1–4.2 są aktualnie dostępne w Make UI bez zmian:
+- `Gmail > Watch emails` (z `Content format = Full content` — krytyczne dla dostępu do `headers` collection)
+- `Tools > Set variable` / `Set multiple variables` / `Switch` / `Iterator` / `Array Aggregator` / `Text Aggregator` / `Numeric Aggregator` / `Sleep` / `Compose a string`
+- `Flow Control > Router`
+- `HTTP > Make a Request`
+- `Email > Send an Email`
+- `Webhooks > Custom webhook`
+- `Make Data Store > Get a record` / `Add or Replace a record` / `Update a record` / `Search records`
+
+### 0.6 Co implementing agent musi mieć na biurku
+
+1. **Ten dokument** — sekcja 0 read-first, potem §4.1 (moduły), §5.1–5.2 (matcher contract + prompt), §6 (test cases), §7 (etapy), §8 (runbook).
+2. **Plan wykonawczy 21-stopniowy:** `C:\Users\Barte\.claude\plans\napisa-em-twoje-uwagi-do-elegant-iverson.md`.
+3. **Phase 1 baseline (referencja):** `docs/Plans/Done/EVSO_Implementation_Guide_Phase1.md` — sekcja 4.3.1 (prompt klasyfikatora używany w P1.5 i wszystkich Phase 1-style fallbackach w §4.1).
+4. **Make blueprint Phase 1 (wzorzec strukturalny):** `docs/Make/EVSO_Form_Intake_v2.blueprint.json`.
+5. **Dostępy:** Make UI (admin), ClickUp UI (admin Workspace `9015890695`), Gmail (`automatyzacjaevso@gmail.com`), klucz Anthropic API (w Make Connections), repo `00_aEvso` (do commitów prompt'ów i blueprintów).
 
 ---
 
@@ -518,7 +611,7 @@ Read + write per `auto-match` decyzja (krok 6 scenariusza M2 Email Intake). Inic
     - `outcome` = `auto-reply-dropped`
     - `from_email_lower` = `email_normalized.from_address`
     - inne pola: null
-  - **Moduł 2.2:** `Flow Control > End scenario` (graceful exit, BEZ błędu).
+  - **Moduł 2.2:** koniec branch'a — żaden kolejny moduł. Make automatycznie zakańcza route po ostatnim module, bez błędu. (Patrz §0.5 — `Flow Control > End scenario` nie istnieje natywnie w Make.) Opcjonalnie: dodać `Tools > Compose a string` z `null` jako sentinel/audit marker — bez wpływu na zachowanie.
 - **Branch "continue":** kontynuujemy do Moduł 3.
 
 #### Moduł 3: `Make Data Store > Get a Record` (idempotency check)
@@ -532,16 +625,32 @@ Read + write per `auto-match` decyzja (krok 6 scenariusza M2 Email Intake). Inic
   - default → **OUTPUT: process**
 
 #### Router B (jeśli idempotency = duplicate-skipped)
-- **Branch "duplicate-skipped":** `Flow Control > End scenario` (loguje "duplicate Message-ID, skipped" w execution log Make).
+- **Branch "duplicate-skipped":** koniec branch'a (jak Moduł 2.2 — żaden kolejny moduł). Execution log Make automatycznie loguje "branch ended at module N", co w praktyce identyfikuje duplikat. Opcjonalnie: `Tools > Compose a string` z `"duplicate Message-ID, skipped"` jako explicit audit marker.
 - **Branch "process":** kontynuujemy do Moduł 5.
 
-#### Moduł 5: `ClickUp > Search Tasks` (P2 prefiltr)
-- **Workspace / Space / Folder / List:** `NOWE ZAPYTANIA`
-- **Filter:**
-  - Custom Field `EMAIL` = `email_normalized.from_address`
-  - Status NOT IN {closed-statuses lista per Phase 1 baseline}
-  - Custom Field `LAST_EMAIL_AT` >= `now - 90 * 86400` (90 dni inkluzywne, UTC; w Make implementacja: `formatDate(now; "X") - 7776000`)
-- **Limit:** 10 (defensywnie; w praktyce nigdy >5)
+#### Moduł 5: `ClickUp > Make an API call` (P2 prefiltr) — patrz D3/D4 w §0.2
+
+> **Decyzja wykonawcza D3:** używamy `ClickUp > Make an API call` zamiast generycznego "Search Tasks" (który nie istnieje jako natywny moduł Make), bo natywny `List filtered tasks` nie udostępnia filtra po Custom Field z explicit equality operator, a pusta tablica z natywnego modułu nie tworzy deterministycznie bundle dla gałęzi no-match.
+
+- **Method:** `GET`
+- **URL:** `/api/v2/team/{{team_id}}/task` (np. `/api/v2/team/9015890695/task` w test env)
+- **Query params:**
+  - `space_ids[]` = ID Space'a (test: `90153314249`)
+  - `folder_ids[]` = ID Folder'a (test: `901513877375`)
+  - `list_ids[]` = ID listy `NOWE ZAPYTANIA` (test: `901522503871`)
+  - `include_closed` = `false`
+  - `custom_fields` = URI-encoded JSON z 2 filtrami:
+    ```json
+    [
+      {"field_id":"d8265463-2ae5-4239-9126-e021a0d121fa","operator":"=","value":"{{email_normalized.from_address}}"},
+      {"field_id":"78419d48-2388-47e9-ba17-bc06b81e8254","operator":">","value":"{{ (timestamp(now) - 7776000) * 1000 }}"}
+    ]
+    ```
+  - Pierwszy filtr: `EMAIL = from_address` (exact match — patrz D4 + P0.3 weryfikacja empiryczna)
+  - Drugi filtr: `LAST_EMAIL_AT > now − 90 dni` w Unix milliseconds (ClickUp custom field daty są w ms)
+- **Parsowanie response:** `response.tasks[]` — może być pusta tablica; `length(tasks) == 0` → gałąź B.1, `>= 1` → gałąź B.2.
+- **Status filter:** ClickUp `include_closed=false` eliminuje closed-statuses zgodnie z Phase 1 baseline. Jeśli wymagana precyzja per-status, dodać `statuses[]` z listą open statuses Phase 1.
+- **Etapowanie:** w P0.2 implementujemy tylko pierwszy filter (EMAIL). Drugi filter (LAST_EMAIL_AT P2) dodawany w P2.8 po empirycznej weryfikacji formatu daty.
 
 #### Moduł 6: `Make Data Store > Search Records` (race-helper)
 - **Data store:** `m2_message_ledger`
@@ -556,7 +665,7 @@ Read + write per `auto-match` decyzja (krok 6 scenariusza M2 Email Intake). Inic
 
 #### Branch "re-search":
 - **Moduł 7.1:** `Tools > Sleep` (2 sekundy)
-- **Moduł 7.2:** Powtórzenie Moduł 5 (Search Tasks z tym samym filtrem)
+- **Moduł 7.2:** Powtórzenie Moduł 5 (`ClickUp > Make an API call` z identycznym JSON filter — `EMAIL = from_address` + P2 prefiltr)
 - Kontynuacja do Moduł 8 z wynikami z 7.2.
 
 #### Moduł 8: `Flow Control > Router` (decyzja: 0 vs ≥1 kandydatów)
@@ -614,17 +723,21 @@ Cel: AI Matcher (S2/S3/S4/S9).
 - **Moduł B.2.6:** `Flow Control > Router` (Router B — decyzja matchera)
 
 ###### Sub-branch B.2.6.A — `decision=auto-match` AND `confidence >= 0.85`
-- **Moduł:** `ClickUp > Add a Comment to a Task` (ścieżka A: post-as-email)
-  - **Variant A (preferowany):** opcja "Send email from task" / "Post as email" w connector'ze ClickUp Make.
-  - **Variant B (fallback automatyczny przy błędzie A):** `Email > Send an Email` (SMTP) do `<task-hash>@mg.clickup.com`, `From=<adres firmowy brand'u>` (per `email_normalized.to_address`), `In-Reply-To=email_normalized.message_id`, `Subject="Re: <oryginalny subject>"`, body = body maila klienta.
-  - **Implementacja switch'a:** zmienna scenariusza `comment_path` (`A` lub `B`) — wybierana w Etapie 0a sekcji 7.
-- **Moduł:** `ClickUp > Update a Task`
+
+> **Decyzja wykonawcza D1:** `comment_path = A_COMMENT` (`ClickUp > Post a Task Comment`). Variant SMTP (post-as-email) projektowany jako fallback w Etap 4 jeśli A_COMMENT okaże się niewystarczający dla K3.
+
+- **Moduł:** `ClickUp > Post a Task Comment`
+  - **Task ID:** `response.target_task_id`
+  - **Comment Text:** formatowany payload email klienta (od, do, temat, data, treść — szablon stały).
+  - **Notify all:** false (push idzie przez Automation A1 — patrz §3.4 + D6).
+  - **Variant B (fallback przy błędzie A — projektowany dla Etap 4 rollback):** `Email > Send an Email` (SMTP) do `<task-hash>@mg.clickup.com`, `From=<adres firmowy brand'u>` (per `email_normalized.to_address`), `In-Reply-To=email_normalized.message_id`, `Subject="Re: <oryginalny subject>"`, body = body maila klienta. **Implementacja switch'a:** zmienna scenariusza `comment_path` (`A_COMMENT` lub `B_EMAIL_TO_TASK`).
+- **Moduł:** `ClickUp > Edit a Task` (lub `Edit a Task with Custom Fields` jeśli edytujemy wyłącznie CF)
   - Custom Fields: `LAST_EMAIL_AT`=now, `MATCHING_CONFIDENCE`=`response.confidence`, `MATCHING_REASONING`=`response.reasoning`, `MATCHING_DECISION`=`auto-match`.
 - **Moduł:** Shadow mode logic (sub-pipeline):
-  - `Make Data Store > Get a Record` → `m2_shadow_counter` (key=brand inferowany z `to_header`).
+  - `Make Data Store > Get a record` → `m2_shadow_counter` (key=brand inferowany z `to_header`; w test env `brand="test"`).
   - `Tools > Switch`:
-    - `auto_match_count < 30` OR `randomNumber() < 0.1` → set `SHADOW_REVIEW_NEEDED`=true (`ClickUp > Update a Task`) + increment `auto_match_count` + `shadow_sample_count` w `m2_shadow_counter` (`Make Data Store > Update a Record`).
-    - default → tylko increment `auto_match_count`.
+    - `auto_match_count < 30` OR `randomNumber() < 0.1` → set `SHADOW_REVIEW_NEEDED`=true (`ClickUp > Edit a Task`) + increment `auto_match_count` + `shadow_sample_count` w `m2_shadow_counter` (`Make Data Store > Update a record`).
+    - default → tylko increment `auto_match_count` (`Make Data Store > Update a record`).
 - **Moduł:** `Make Data Store > Add or Replace a record` → `m2_message_ledger`
   - `outcome` = `auto-match`
   - `target_task_id` = `response.target_task_id`
@@ -699,7 +812,7 @@ Cel: AI Matcher (S2/S3/S4/S9).
 - Body: prompt z sekcji 5.4 + payload taska.
 - **Error handler:** typ "Resume" z fallback `Do weryfikacji`. Tytuł zostaje "Do weryfikacji" — handlowiec dopisze ręcznie.
 
-#### Moduł 4: `ClickUp > Update a Task`
+#### Moduł 4: `ClickUp > Edit a Task` (lub `Edit a Task with Custom Fields`)
 - Custom Field `SUGEROWANY_TYTUŁ_MAILA` = response z modułu 3.
 
 #### Moduł 5 (error handler): jak Moduł 3 (Resume z fallback "Do weryfikacji").
@@ -1321,44 +1434,50 @@ Filozofia: każdy etap kończy się **jawnym kryterium przejścia** do następne
 
 ### Etap 0 — Pre-rekwizyty (przed jakimkolwiek kodem)
 
-| # | Krok | Cel | Wynik | Kto |
-|---|---|---|---|---|
-| 0a | Empiryczny test IP6 (Add Comment as email vs SMTP do `<id>@mg.clickup.com`) w testowym Workspace | Zdecydować baseline dla wpięcia maila do thread'u | Notatka decyzyjna: ścieżka A lub B = baseline. Make blueprint M2 ma zmienną `comment_path` ustawioną. | Bartek |
-| 0b | Ustalenie limitów AI uses ClickUp Business (sprawdzić w UI lub support) | Walidacja decyzji "Make+Anthropic baseline" dla `SUGEROWANY_TYTUŁ_MAILA` | Potwierdzenie / re-evaluacja | Bartek |
-| 0c | Konfiguracja forward Dhosting `kontakt@<brand>.*` → produkcyjny inbox brand'owy z label'em "M2-intake" — **TYLKO dla brand'u pilot Etap 4**. Test env zostawia bez forward'u, używa `automatyzacjaevso@gmail.com` jako mock | Test env operational | Forward działa end-to-end (test: wysłać mail z zewnątrz → label "M2-intake" w produkcyjnym inboxie) | Bartek |
-| 0d | Walidacja Make ops cap obecnego planu EVSO | Wiedzieć ile ops mamy do dyspozycji | Liczba; jeśli za mało → up-tier przed Etapem 4 | Bartek |
+> **Status (2026-05-12):** **DONE** dla test env. 0c (forward Dhosting) wykonywane dopiero w Etap 4 dla pilot brand'u.
 
-**Kryterium przejścia do Etapu 1:** 0a decyzja podjęta, 0c działa dla brand'u pilot, 0d daje OK lub up-tier wykonany.
+| # | Krok | Cel | Wynik | Status | Kto |
+|---|---|---|---|---|---|
+| 0a | Empiryczny test IP6 (Add Comment as email vs SMTP do `<id>@mg.clickup.com`) w testowym Workspace | Zdecydować baseline dla wpięcia maila do thread'u | **DONE.** Obie ścieżki przetestowane (A_COMMENT i B_EMAIL_TO_TASK PASS). Decyzja D1 (patrz §0.2): `comment_path = A_COMMENT`. Test task `86c9q2apn` / LEAD-10118. | DONE | Bartek |
+| 0b | Ustalenie limitów AI uses ClickUp Business (sprawdzić w UI lub support) | Walidacja decyzji "Make+Anthropic baseline" dla `SUGEROWANY_TYTUŁ_MAILA` | **POMINIĘTE** — decyzja: Make+Anthropic baseline w v1, ClickUp AI Fields out-of-scope. Re-evaluate w Etap 7 (R4). | SKIPPED | Bartek |
+| 0c | Konfiguracja forward Dhosting `kontakt@<brand>.*` → produkcyjny inbox brand'owy z label'em "M2-intake" — **TYLKO dla brand'u pilot Etap 4**. Test env zostawia bez forward'u, używa `automatyzacjaevso@gmail.com` jako mock | Test env operational | Test env: bez forward'u, używamy `automatyzacjaevso@gmail.com` z manual label `M2-intake`. | DEFERRED → Etap 4b | Bartek |
+| 0d | Walidacja Make ops cap obecnego planu EVSO | Wiedzieć ile ops mamy do dyspozycji | **DONE** — ops cap OK dla obecnego ruchu (~100 maili/tydz). Re-evaluate przy R3 (>300/tydz). | DONE | Bartek |
+
+**Kryterium przejścia do Etapu 1:** 0a decyzja podjęta ✓, 0d OK ✓. 0c przeniesione na Etap 4.
 
 **Rollback Etap 0:** brak — to są pre-rekwizyty, nic nie zostaje zmienione w produkcji.
 
 ### Etap 1 — Setup data model (testowy Workspace + testowy Make)
 
-| # | Krok | Wynik | Kto |
-|---|---|---|---|
-| 1a | Dodanie 6 Custom Fields M2 (sekcja 3.1) na testowej liście `NOWE ZAPYTANIA` | Field IDs zapisane do dokumentacji | Bartek |
-| 1b | Konfiguracja 4 filtered views (sekcja 3.3) | View URL'e zapisane | Bartek |
-| 1c | Konfiguracja 3 Automations A1/A2/A3 (sekcja 3.4) | Każda Automation testowo odpalona przez ręczny trigger | Bartek |
-| 1d | Konfiguracja Make Data Stores `m2_message_ledger` i `m2_shadow_counter` (schema sekcja 3.5) | Data Stores widoczne w testowym Make | Bartek |
-| 1e | Inicjalizacja `m2_shadow_counter` rekordem `{brand: "test", auto_match_count: 0, shadow_sample_count: 0, started_at: now}` | Rekord w Data Store | Bartek |
+> **Status (2026-05-12):** **DONE z drobną luką** — 1e wymaga uzupełnienia (rekord testowy w `m2_shadow_counter`). 1b ma 3/4 widoki (czwarty czeka na P1.7). 1c ma 2/3 automations (A1 disabled — D6).
 
-**Kryterium przejścia do Etapu 2:** wszystkie 1a–1e istnieją w testowym Workspace + Make.
+| # | Krok | Wynik | Status | Kto |
+|---|---|---|---|---|
+| 1a | Dodanie 6 Custom Fields M2 (sekcja 3.1) na testowej liście `NOWE ZAPYTANIA TESTOWY` | **DONE** — wszystkie 6 CF dodane: `LAST_EMAIL_AT`, `MATCHING_CONFIDENCE`, `MATCHING_DECISION`, `MATCHING_REASONING`, `SHADOW_REVIEW_NEEDED`, `SUGEROWANY_TYTUŁ_MAILA`. Field IDs `EMAIL` i `LAST_EMAIL_AT` w §0.4. | DONE | Bartek |
+| 1b | Konfiguracja 4 filtered views (sekcja 3.3) | **3/4 DONE** — `Do weryfikacji — dopasowanie maila`, `Auto-match audit (24h)`, `Shadow review (open)` skonfigurowane. `Do weryfikacji — typ zapytania` SKIPPED do czasu, aż P1.7 zacznie wypełniać `KLASYFIKACJA_AI` w nowych taskach. | PARTIAL | Bartek |
+| 1c | Konfiguracja 3 Automations A1/A2/A3 (sekcja 3.4) | **2/3 DONE** — A2 (`MATCHING_DECISION=escalated-need-confirm → Priority=Urgent + comment`) PASS, A3 (`SHADOW_REVIEW_NEEDED=true → comment`) PASS. **A1 DISABLED** — decyzja D6: rebuild jako `Comment added → @mention assignee` (NIE `Add comment`) w P3.15. | PARTIAL | Bartek |
+| 1d | Konfiguracja Make Data Stores `m2_message_ledger` i `m2_shadow_counter` (schema sekcja 3.5) | **DONE** — `m2_message_ledger` 9 MB klucz `message_id` (Header `Message-ID`), `m2_shadow_counter` 1 MB klucz `brand`. | DONE | Bartek |
+| 1e | Inicjalizacja `m2_shadow_counter` rekordem `{brand: "test", auto_match_count: 0, shadow_sample_count: 0, started_at: now}` | **TODO** — rekord testowy nie dodany. Prereq dla P2.13. | TODO | Bartek |
+
+**Kryterium przejścia do Etapu 2:** 1a–1d ✓; 1e można uzupełnić w trakcie P2 (przed P2.13). 1b czwarty widok i 1c A1 dopełnione w P1/P3.
 
 **Rollback Etap 1:** usunięcie nowych CF / views / Automations / Data Stores w testowym env. Phase 1 nieruszone.
 
 ### Etap 2 — Implementacja Make scenariuszy (testowo)
 
-| # | Krok | Wynik | Kto |
-|---|---|---|---|
-| 2a | Klon Phase 1 `EVSO - Email Intake` jako `EVSO - M2 Email Intake [TEST]`; **Phase 1 scenariusz pozostaje aktywny i nieruszony** (H2) | Nowy scenariusz w Make | Bartek |
-| 2b | Implementacja modułów 1–9 (sekcja 4.1) — krok po kroku, z error handler na każdym krytycznym module | Scenariusz kompiluje, połączenia ClickUp + Anthropic + Data Store podpięte | Bartek |
-| 2c | Implementacja prompt v1.0 matchera (sekcja 5.2) jako zmienna scenariusza `matcher_system_prompt_v1_0` + commit promptu w gicie | Prompt zapisany w gicie + zmienna w Make | Bartek |
-| 2d | Implementacja scenariusza `EVSO - M2 Title Suggestion [TEST]` (sekcja 4.2) | Scenariusz aktywny, podpięty na webhook ClickUp z testowej listy | Bartek |
-| 2e | Eksport blueprint M2 do `docs/Make/EVSO_M2_*.blueprint.json` (H8) | Blueprint w gicie | Bartek |
+> **Status (2026-05-12):** **IN PROGRESS** — 2a/2b smoke PASS (deterministyczny EMAIL match), 2c/2d/2e do zrobienia. Roadmap szczegółowy P0–P3 (§0.3) zastępuje generyczne 2b: po P0 (fundament fix) → P1 (auto-reply + Phase 1 klasyfikator) → P2 (AI matcher = 2c) → P3 (Title Suggestion = 2d + error handler + A1 rebuild).
 
-**Kryterium przejścia do Etapu 3:** scenariusz `EVSO - M2 Email Intake [TEST]` odpalony manualnie z 1 emailem (smoke test) — task w testowym ClickUp pojawia się ze wszystkimi M2 CF wypełnionymi.
+| # | Krok | Wynik | Status | Kto |
+|---|---|---|---|---|
+| 2a | Klon Phase 1 `EVSO - Email Intake` jako `EVSO - M2 Email Intake [TEST]`; **Phase 1 scenariusz pozostaje aktywny i nieruszony** (H2) | **DONE** — scenariusz `EVSO - M2 Email Intake [TEST]` istnieje. | DONE | Bartek |
+| 2b | Implementacja modułów 1–9 (sekcja 4.1) — krok po kroku, z error handler na każdym krytycznym module | **SMOKE PASS** — Gmail Watch, normalize, ledger idempotency guard, deterministyczny EMAIL match (obecnie przez `List filtered tasks` z limit 10 + Text Aggregator hack — **zmiana na `Make an API call` w P0.2**), Create Task w no-match (obecnie bez Phase 1 klasyfikatora — **dodanie w P1.5**), ledger write outcomes (auto-match, new-task). Testy 1–4 PASS. Error handlers TODO w P3.17. AI Matcher TODO w P2. | PARTIAL (smoke) → P0–P3 | Bartek |
+| 2c | Implementacja prompt v1.0 matchera (sekcja 5.2) jako zmienna scenariusza `matcher_system_prompt_v1_0` + commit promptu w gicie | **TODO w P2.10** — prompt do commit'u w `docs/Make/Prompts/m2_matcher_v1_0_system.txt` + `m2_matcher_v1_0_user.txt`. | TODO | Bartek |
+| 2d | Implementacja scenariusza `EVSO - M2 Title Suggestion [TEST]` (sekcja 4.2) | **TODO w P3.16** — prompt do commit'u w `docs/Make/Prompts/m2_title_suggestion_v1_0.txt`. | TODO | Bartek |
+| 2e | Eksport blueprint M2 do `docs/Make/EVSO_M2_*.blueprint.json` (H8) | **TODO w P4.21** — eksport po zaliczeniu pełnego test suite. | TODO | Bartek |
 
-**Rollback Etap 2:** wyłączenie scenariusza testowego w Make. Phase 1 produkcyjny nieruszony.
+**Kryterium przejścia do Etapu 3:** wszystkie kroki P0–P3 z §0.3 ukończone. Smoke jest stabilną bazą, ale §6 test suite wymaga AI matcher + Phase 1 klasyfikator + auto-reply filter.
+
+**Rollback Etap 2:** wyłączenie scenariusza testowego w Make (smoke baseline pozostaje jako rollback target przy każdym P-level'u). Phase 1 produkcyjny nieruszony.
 
 ### Etap 3 — Test Sx-by-Sx w testowym env
 
@@ -1705,3 +1824,5 @@ Konkretnie:
 ---
 
 *Koniec dokumentu. Wersja v1.0 po finalizacji prompt'u matchera (sekcja 5.2) i ukończeniu testów (sekcja 6.2). Każda istotna zmiana semantyki guide'a = inkrement do v1.x i commit.*
+
+*Wersja v1.1 (2026-05-12) — dodana §0 Stan implementacji + decyzje wykonawcze (D1–D8) na podstawie raportów Phase 1 + Phase 2. Skorygowane nazewnictwo modułów Make w §4.1 i §4.2 (`Search Tasks` → `Make an API call`, `Add a Comment to a Task` → `Post a Task Comment`, `Update a Task` → `Edit a Task`, `End scenario` → wzorzec "branch końcowy bez modułów"). Etapy 0/1/2 w §7 oznaczone statusem DONE/IN PROGRESS z mapowaniem na P0–P4 roadmap.*
