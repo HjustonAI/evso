@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Barte\\\\00_aEvso\\\\archive\" | Select-Object Name, @{Name='Size';Expression={if\\($_.PSIsContainer\\){'[DIR]'}else{$_.Length}}})"
+    ]
+  }
+}

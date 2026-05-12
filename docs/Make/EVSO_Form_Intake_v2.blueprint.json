@@ -1,0 +1,649 @@
+{
+    "name": "EVSO | WEBHOOK → AI EXTRACTION → CLICKUP | LEAD Z FORMULARZA v2",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 4008814,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": -2631,
+                    "y": 862
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "label": "WEBHOOK | FORMULARZ LEAD"
+                        }
+                    }
+                },
+                "expect": [
+                    { "name": "miasto", "type": "text", "label": "Miasto" },
+                    { "name": "telefon", "type": "text", "label": "Telefon" },
+                    { "name": "data", "type": "text", "label": "Data" },
+                    { "name": "godzina", "type": "text", "label": "Godzina" },
+                    { "name": "uczestnicy", "type": "text", "label": "Liczba uczestników" },
+                    { "name": "email", "type": "text", "label": "Email" },
+                    { "name": "imie_nazwisko", "type": "text", "label": "Imię i nazwisko" },
+                    { "name": "uwagi", "type": "text", "label": "Uwagi" },
+                    { "name": "usluga", "type": "text", "label": "Usługa (boat/tram)" },
+                    { "name": "zrodlo", "type": "text", "label": "Źródło (URL strony)" }
+                ]
+            }
+        },
+        {
+            "id": 42,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "variables": [
+                    { "name": "miasto", "value": "{{1.select_2}}" },
+                    { "name": "rodzaj_imprezy", "value": "{{1.select_3}}" },
+                    { "name": "pakiet", "value": "{{1.select_1}}" },
+                    { "name": "imie_nazwisko", "value": "{{1.name_1}}" },
+                    { "name": "email", "value": "{{1.email_1}}" },
+                    { "name": "telefon", "value": "{{1.phone_1}}" },
+                    { "name": "liczba_osob", "value": "{{1.number_1}}" },
+                    { "name": "opis", "value": "{{1.textarea_1}}" },
+                    { "name": "data_eventu", "value": "{{1.name_2}}" },
+                    { "name": "godzina", "value": "{{1.name_3}}" },
+                    { "name": "client_txt", "value": "{{1.textarea_1}}" },
+                    { "name": "source_url", "value": "{{if((1.current_url != \"\"); 1.current_url; if((1.referer_url != \"\"); 1.referer_url; if((1._wp_http_referer != \"\"); 1._wp_http_referer; \"\")))}}" }
+                ],
+                "scope": "roundtrip"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -2273,
+                    "y": 861
+                },
+                "restore": {
+                    "expect": {
+                        "variables": {
+                            "items": [null, null, null, null, null, null, null, null, null, null, null, null]
+                        },
+                        "scope": { "label": "One cycle" }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "type": "array",
+                        "label": "Variables",
+                        "spec": [
+                            { "name": "name", "label": "Variable name", "type": "text", "required": true },
+                            { "name": "value", "label": "Variable value", "type": "any" }
+                        ]
+                    },
+                    { "name": "scope", "type": "select", "label": "Variable lifetime", "required": true }
+                ],
+                "interface": [
+                    { "name": "miasto", "label": "miasto", "type": "any" },
+                    { "name": "rodzaj_imprezy", "label": "rodzaj_imprezy", "type": "any" },
+                    { "name": "pakiet", "label": "pakiet", "type": "any" },
+                    { "name": "imie_nazwisko", "label": "imie_nazwisko", "type": "any" },
+                    { "name": "email", "label": "email", "type": "any" },
+                    { "name": "telefon", "label": "telefon", "type": "any" },
+                    { "name": "liczba_osob", "label": "liczba_osob", "type": "any" },
+                    { "name": "opis", "label": "opis", "type": "any" },
+                    { "name": "data_eventu", "label": "data_eventu", "type": "any" },
+                    { "name": "godzina", "label": "godzina", "type": "any" },
+                    { "name": "client_txt", "label": "client_txt", "type": "any" },
+                    { "name": "source_url", "label": "source_url", "type": "any" }
+                ]
+            }
+        },
+        {
+            "id": 43,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "variables": [
+                    {
+                        "name": "source_brand",
+                        "value": "{{if(contains(lower(42.source_url); \"partyboat.fun\"); \"PARTYBOAT.FUN\"; if(contains(lower(42.source_url); \"boatparty.pl\"); \"BOATPARTY.PL\"; if(contains(lower(42.source_url); \"partytram.fun\"); \"PARTYTRAM.FUN\"; if(contains(lower(42.source_url); \"tramparty.pl\"); \"TRAMPARTY.PL\"; if(contains(lower(42.source_url); \"busparty\"); \"BUSPARTY.FUN\"; \"NIEZNANE\")))))}}"
+                    },
+                    {
+                        "name": "service_type",
+                        "value": "{{if(contains(lower(42.source_url); \"partyboat.fun\"); \"BOAT\"; if(contains(lower(42.source_url); \"boatparty.pl\"); \"BOAT\"; if(contains(lower(42.source_url); \"partytram.fun\"); \"TRAM\"; if(contains(lower(42.source_url); \"tramparty.pl\"); \"TRAM\"; if(contains(lower(42.source_url); \"busparty\"); \"BUS\"; \"\")))))}}",
+                        "note": "NAPRAWKA: usunięta referencja do nieistniejącego modułu ID 7"
+                    },
+                    {
+                        "name": "task_date_display",
+                        "value": "{{if(42.data_eventu != \"\"; 42.data_eventu; \"BRAK DATY\")}}"
+                    },
+                    {
+                        "name": "clickup_pozyskanie",
+                        "value": "{{if(contains(lower(42.source_url); \"partyboat.fun\"); 2; if(contains(lower(42.source_url); \"boatparty.pl\"); 3; if(contains(lower(42.source_url); \"partytram.fun\"); 4; if(contains(lower(42.source_url); \"tramparty.pl\"); 5; \"\"))))}}"
+                    }
+                ],
+                "scope": "roundtrip"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -1940,
+                    "y": 855
+                },
+                "restore": {
+                    "expect": {
+                        "variables": {
+                            "items": [null, null, null, null]
+                        },
+                        "scope": { "label": "One cycle" }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "type": "array",
+                        "label": "Variables",
+                        "spec": [
+                            { "name": "name", "label": "Variable name", "type": "text", "required": true },
+                            { "name": "value", "label": "Variable value", "type": "any" }
+                        ]
+                    },
+                    { "name": "scope", "type": "select", "label": "Variable lifetime", "required": true }
+                ],
+                "interface": [
+                    { "name": "source_brand", "label": "source_brand", "type": "any" },
+                    { "name": "service_type", "label": "service_type", "type": "any" },
+                    { "name": "task_date_display", "label": "task_date_display", "type": "any" },
+                    { "name": "clickup_pozyskanie", "label": "clickup_pozyskanie", "type": "any" }
+                ]
+            }
+        },
+        {
+            "id": 44,
+            "module": "anthropic-claude:createAMessage",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 0
+            },
+            "mapper": {
+                "model": "claude-haiku-4-5",
+                "system": "Jesteś asystentem klasyfikacji i ekstrakcji danych dla firmy eventowej EVSO (tramwaje, statki, busy imprezowe).\n\nZADANIE:\n1. Sklasyfikuj zapytanie klienta.\n2. Wyciągnij z wolnego tekstu klienta brakujące dane (tylko te oznaczone jako [PUSTE]).\n3. Napisz krótkie podsumowanie po polsku.\n\nKLASYFIKACJA:\n- goracy_lead: podane miasto + data + typ imprezy + kontakt (email lub telefon)\n- niekompletny_lead: intencja eventowa jasna, ale brakuje kluczowych danych\n- zapytanie_ogolne: pytanie o cennik, dostępność, ogólne info — nie konkretne zapytanie\n- spam: nie dotyczy eventów, reklama, niezrozumiałe\n\nCONFIDENCE:\n- wysoka: klasyfikacja oczywista\n- srednia: pewne niejasności\n- niska: dane bardzo niepełne lub sprzeczne\n\nEKSTRAKCJA:\n- Wyciągaj dane TYLKO z sekcji 'Opis klienta (wolny tekst)'\n- Wypełniaj TYLKO pola oznaczone jako [PUSTE] w wiadomości użytkownika\n- Jeśli pole ma wartość z formularza, NIE nadpisuj go\n- Jeśli nie znalazłeś danej informacji w tekście, zwróć null (nie pusty string)\n- miasto: zwróć w mianowniku, WIELKIMI LITERAMI (np. KRAKÓW, WROCŁAW, GDAŃSK)\n- rodzaj_imprezy: dopasuj do jednej z wartości: Kawalerski, Panieński, Urodziny, Firmówka, Inne\n- liczba_osob: tylko liczba jako string (np. \"20\"), null jeśli brak\n- data_eventu: format YYYY-MM-DD jeśli możliwe, null jeśli brak lub nieprecyzyjne\n- godzina: format HH:MM jeśli możliwe, null jeśli brak\n\nPODSUMOWANIE:\n- po polsku, 1-2 zdania\n- opisz czego klient szuka i jaka usługa (tramwaj/statek/bus)\n- jeśli dane zostały wyciągnięte z wolnego tekstu, dodaj na końcu: (dane z opisu — do weryfikacji)\n- jeśli brakuje ważnych danych do ofertowania, zaznacz krótko co brakuje\n\nWAŻNE:\n- Oceń dane całościowo: zarówno pola formularza, jak i opis klienta\n- Jeśli klient pisze o imprezie na tramwaju/statku/busie, NIGDY nie oznaczaj jako spam tylko dlatego że brakuje danych\n- Klasyfikuj na podstawie WSZYSTKICH dostępnych danych (formularz + ekstrakcja)\n- Zwróć WYŁĄCZNIE czysty JSON bez markdown, bez ``` i bez żadnego komentarza\n\nFORMAT ODPOWIEDZI — zwróć dokładnie ten JSON i nic więcej:\n{\"klasyfikacja\":\"goracy_lead\",\"confidence\":\"wysoka\",\"podsumowanie\":\"...\",\"ekstrakcja\":{\"miasto\":null,\"data_eventu\":null,\"godzina\":null,\"liczba_osob\":null,\"rodzaj_imprezy\":null,\"pakiet\":null,\"imie_nazwisko\":null,\"telefon\":null,\"email\":null}}",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Dane z formularza:\n- Miasto: {{42.miasto}} {{if(42.miasto = \"\"; \"[PUSTE]\"; \"\")}}\n- Rodzaj imprezy: {{42.rodzaj_imprezy}} {{if(42.rodzaj_imprezy = \"\"; \"[PUSTE]\"; \"\")}}\n- Pakiet: {{42.pakiet}} {{if(42.pakiet = \"\"; \"[PUSTE]\"; \"\")}}\n- Imię i nazwisko: {{42.imie_nazwisko}} {{if(42.imie_nazwisko = \"\"; \"[PUSTE]\"; \"\")}}\n- Email: {{42.email}} {{if(42.email = \"\"; \"[PUSTE]\"; \"\")}}\n- Telefon: {{42.telefon}} {{if(42.telefon = \"\"; \"[PUSTE]\"; \"\")}}\n- Liczba osób: {{42.liczba_osob}} {{if(42.liczba_osob = \"\"; \"[PUSTE]\"; \"\")}}\n- Data eventu: {{42.data_eventu}} {{if(42.data_eventu = \"\"; \"[PUSTE]\"; \"\")}}\n- Godzina: {{42.godzina}} {{if(42.godzina = \"\"; \"[PUSTE]\"; \"\")}}\n- Źródło: {{43.source_brand}}\n\nOpis klienta (wolny tekst):\n{{42.client_txt}}"
+                    }
+                ],
+                "max_tokens": "500"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -1640,
+                    "y": 500
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "ANTHROPIC API — skonfiguruj connection z API key"
+                        }
+                    },
+                    "expect": {
+                        "model": {
+                            "label": "Claude Haiku 4.5"
+                        },
+                        "messages": {
+                            "items": [null]
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:anthropic-claude",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "Model",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "claude-sonnet-4-6",
+                                "claude-opus-4-6",
+                                "claude-sonnet-4-5",
+                                "claude-haiku-4-5",
+                                "claude-opus-4-5"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "system",
+                        "type": "text",
+                        "label": "System Prompt"
+                    },
+                    {
+                        "name": "messages",
+                        "type": "array",
+                        "label": "Messages",
+                        "spec": [
+                            { "name": "role", "type": "select", "label": "Role" },
+                            { "name": "content", "type": "text", "label": "Content" }
+                        ]
+                    },
+                    {
+                        "name": "max_tokens",
+                        "type": "uinteger",
+                        "label": "Max Tokens",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    { "name": "result", "type": "text", "label": "Result" }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 45,
+            "module": "json:ParseJSON",
+            "version": 1,
+            "parameters": {
+                "type": 0
+            },
+            "mapper": {
+                "json": "{{trim(replace(replace(44.result; \"```json\"; \"\"); \"```\"; \"\"))}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -1300,
+                    "y": 500,
+                    "messages": [
+                        {
+                            "category": "reference",
+                            "severity": "warning",
+                            "message": "Data structure (type: 0) jest placeholder. Utwórz nową strukturę danych 'EVSO AI Response v2' i wstaw jej ID zamiast 0. Struktura musi zawierać pola: klasyfikacja (text), confidence (text), podsumowanie (text), ekstrakcja (collection z polami: miasto, data_eventu, godzina, liczba_osob, rodzaj_imprezy, pakiet, imie_nazwisko, telefon, email — wszystkie text)."
+                        }
+                    ]
+                },
+                "restore": {
+                    "parameters": {
+                        "type": {
+                            "label": "EVSO AI Response v2 — UTWÓRZ I PODMIEŃ ID"
+                        }
+                    }
+                },
+                "parameters": [
+                    { "name": "type", "type": "udt", "label": "Data structure" }
+                ],
+                "expect": [
+                    { "name": "json", "type": "text", "label": "JSON string", "required": true }
+                ],
+                "interface": [
+                    { "name": "klasyfikacja", "label": "klasyfikacja", "type": "text" },
+                    { "name": "confidence", "label": "confidence", "type": "text" },
+                    { "name": "podsumowanie", "label": "podsumowanie", "type": "text" },
+                    {
+                        "name": "ekstrakcja",
+                        "label": "ekstrakcja",
+                        "type": "collection",
+                        "spec": [
+                            { "name": "miasto", "label": "miasto", "type": "text" },
+                            { "name": "data_eventu", "label": "data_eventu", "type": "text" },
+                            { "name": "godzina", "label": "godzina", "type": "text" },
+                            { "name": "liczba_osob", "label": "liczba_osob", "type": "text" },
+                            { "name": "rodzaj_imprezy", "label": "rodzaj_imprezy", "type": "text" },
+                            { "name": "pakiet", "label": "pakiet", "type": "text" },
+                            { "name": "imie_nazwisko", "label": "imie_nazwisko", "type": "text" },
+                            { "name": "telefon", "label": "telefon", "type": "text" },
+                            { "name": "email", "label": "email", "type": "text" }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": 50,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "variables": [
+                    {
+                        "name": "merged_miasto",
+                        "value": "{{if(42.miasto != \"\"; upper(trim(42.miasto)); if(45.ekstrakcja.miasto != \"\"; upper(trim(45.ekstrakcja.miasto)); \"\"))}}"
+                    },
+                    {
+                        "name": "merged_rodzaj_imprezy",
+                        "value": "{{if(42.rodzaj_imprezy != \"\"; 42.rodzaj_imprezy; if(45.ekstrakcja.rodzaj_imprezy != \"\"; 45.ekstrakcja.rodzaj_imprezy; \"\"))}}"
+                    },
+                    {
+                        "name": "merged_pakiet",
+                        "value": "{{if(42.pakiet != \"\"; 42.pakiet; if(45.ekstrakcja.pakiet != \"\"; 45.ekstrakcja.pakiet; \"\"))}}"
+                    },
+                    {
+                        "name": "merged_imie",
+                        "value": "{{if(42.imie_nazwisko != \"\"; 42.imie_nazwisko; if(45.ekstrakcja.imie_nazwisko != \"\"; 45.ekstrakcja.imie_nazwisko; \"\"))}}"
+                    },
+                    {
+                        "name": "merged_email",
+                        "value": "{{if(42.email != \"\"; 42.email; if(45.ekstrakcja.email != \"\"; 45.ekstrakcja.email; \"\"))}}"
+                    },
+                    {
+                        "name": "merged_telefon",
+                        "value": "{{if(42.telefon != \"\"; 42.telefon; if(45.ekstrakcja.telefon != \"\"; 45.ekstrakcja.telefon; \"\"))}}"
+                    },
+                    {
+                        "name": "merged_liczba_osob",
+                        "value": "{{if(42.liczba_osob != \"\"; 42.liczba_osob; if(45.ekstrakcja.liczba_osob != \"\"; 45.ekstrakcja.liczba_osob; \"\"))}}"
+                    },
+                    {
+                        "name": "merged_data",
+                        "value": "{{if(42.data_eventu != \"\"; 42.data_eventu; if(45.ekstrakcja.data_eventu != \"\"; 45.ekstrakcja.data_eventu; \"\"))}}"
+                    },
+                    {
+                        "name": "merged_godzina",
+                        "value": "{{if(42.godzina != \"\"; 42.godzina; if(45.ekstrakcja.godzina != \"\"; 45.ekstrakcja.godzina; \"\"))}}"
+                    }
+                ],
+                "scope": "roundtrip"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -960,
+                    "y": 500
+                },
+                "restore": {
+                    "expect": {
+                        "variables": {
+                            "items": [null, null, null, null, null, null, null, null, null]
+                        },
+                        "scope": { "label": "One cycle" }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "type": "array",
+                        "label": "Variables",
+                        "spec": [
+                            { "name": "name", "label": "Variable name", "type": "text", "required": true },
+                            { "name": "value", "label": "Variable value", "type": "any" }
+                        ]
+                    },
+                    { "name": "scope", "type": "select", "label": "Variable lifetime", "required": true }
+                ],
+                "interface": [
+                    { "name": "merged_miasto", "label": "merged_miasto", "type": "any" },
+                    { "name": "merged_rodzaj_imprezy", "label": "merged_rodzaj_imprezy", "type": "any" },
+                    { "name": "merged_pakiet", "label": "merged_pakiet", "type": "any" },
+                    { "name": "merged_imie", "label": "merged_imie", "type": "any" },
+                    { "name": "merged_email", "label": "merged_email", "type": "any" },
+                    { "name": "merged_telefon", "label": "merged_telefon", "type": "any" },
+                    { "name": "merged_liczba_osob", "label": "merged_liczba_osob", "type": "any" },
+                    { "name": "merged_data", "label": "merged_data", "type": "any" },
+                    { "name": "merged_godzina", "label": "merged_godzina", "type": "any" }
+                ]
+            }
+        },
+        {
+            "id": 51,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "variables": [
+                    {
+                        "name": "merged_completeness",
+                        "value": "{{round(((if(50.merged_imie != \"\"; 1; 0)) + (if(50.merged_email != \"\"; 1; 0)) + (if(50.merged_telefon != \"\"; 1; 0)) + (if(50.merged_miasto != \"\"; 1; 0)) + (if(50.merged_data != \"\"; 1; 0)) + (if(50.merged_godzina != \"\"; 1; 0)) + (if(50.merged_liczba_osob != \"\"; 1; 0)) + (if(50.merged_rodzaj_imprezy != \"\"; 1; 0))) / 8 * 100)}}"
+                    },
+                    {
+                        "name": "clickup_miasto",
+                        "value": "{{if(50.merged_miasto = \"WROCŁAW\"; 0; if(50.merged_miasto = \"POZNAŃ\"; 1; if(50.merged_miasto = \"KRAKÓW\"; 2; if(50.merged_miasto = \"GDAŃSK\"; 3; if(50.merged_miasto = \"ŁÓDŹ\"; 4; if(50.merged_miasto = \"BYDGOSZCZ\"; 5; if(50.merged_miasto = \"TORUŃ\"; 6; if(50.merged_miasto = \"KATOWICE\"; 7; if(50.merged_miasto = \"SZCZECIN\"; 8; if(50.merged_miasto = \"WARSZAWA\"; 9; if(50.merged_miasto = \"SOPOT\"; 10; \"\"))))))))))))}}"
+                    },
+                    {
+                        "name": "clickup_pakiet",
+                        "value": "{{if(upper(trim(50.merged_pakiet)) = \"FUN\"; 0; if(upper(trim(50.merged_pakiet)) = \"PARTY\"; 1; if(upper(trim(50.merged_pakiet)) = \"LUX\"; 2; if(upper(trim(50.merged_pakiet)) = \"INDYVIDUAL !\"; 3; if(upper(trim(50.merged_pakiet)) = \"INDIVIDUAL !\"; 3; if(upper(trim(50.merged_pakiet)) = \"INVIDUAL II\"; 4; if(upper(trim(50.merged_pakiet)) = \"INDIVIDUAL II\"; 4; \"\")))))))}}",
+                        "note": "Sprawdź dokładne wartości dropdownu PAKIET w ClickUp i dostosuj"
+                    },
+                    {
+                        "name": "clickup_typ_imprezy",
+                        "value": "{{if(upper(trim(50.merged_rodzaj_imprezy)) = \"KAWALERSKI\"; 0; if(upper(trim(50.merged_rodzaj_imprezy)) = \"PANIEŃSKI\"; 1; if(upper(trim(50.merged_rodzaj_imprezy)) = \"URODZINY\"; 2; if(upper(trim(50.merged_rodzaj_imprezy)) = \"FIRMÓWKA\"; 3; if(upper(trim(50.merged_rodzaj_imprezy)) = \"INNE\"; 4; \"\")))))}}"
+                    },
+                    {
+                        "name": "clickup_usluga",
+                        "value": "{{if(43.service_type = \"BOAT\"; 0; if(43.service_type = \"TRAM\"; 1; if(43.service_type = \"BUS\"; 2; \"\")))}}"
+                    }
+                ],
+                "scope": "roundtrip"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -620,
+                    "y": 500
+                },
+                "restore": {
+                    "expect": {
+                        "variables": {
+                            "items": [null, null, null, null, null]
+                        },
+                        "scope": { "label": "One cycle" }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "type": "array",
+                        "label": "Variables",
+                        "spec": [
+                            { "name": "name", "label": "Variable name", "type": "text", "required": true },
+                            { "name": "value", "label": "Variable value", "type": "any" }
+                        ]
+                    },
+                    { "name": "scope", "type": "select", "label": "Variable lifetime", "required": true }
+                ],
+                "interface": [
+                    { "name": "merged_completeness", "label": "merged_completeness", "type": "any" },
+                    { "name": "clickup_miasto", "label": "clickup_miasto", "type": "any" },
+                    { "name": "clickup_pakiet", "label": "clickup_pakiet", "type": "any" },
+                    { "name": "clickup_typ_imprezy", "label": "clickup_typ_imprezy", "type": "any" },
+                    { "name": "clickup_usluga", "label": "clickup_usluga", "type": "any" }
+                ]
+            }
+        },
+        {
+            "id": 46,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "variables": [
+                    {
+                        "name": "clickup_klasyfikacja",
+                        "value": "{{if(45.klasyfikacja = \"goracy_lead\"; \"Gorący lead\"; if(45.klasyfikacja = \"niekompletny_lead\"; \"Niekompletny lead\"; if(45.klasyfikacja = \"zapytanie_ogolne\"; \"Zapytanie ogólne\"; if(45.klasyfikacja = \"spam\"; \"Spam\"; \"Do weryfikacji\"))))}}"
+                    },
+                    {
+                        "name": "clickup_confidence",
+                        "value": "{{if(45.confidence = \"wysoka\"; \"Wysoka\"; if(45.confidence = \"srednia\"; \"Średnia\"; if(45.confidence = \"niska\"; \"Niska\"; \"Niska\")))}}"
+                    },
+                    {
+                        "name": "task_title",
+                        "value": "{{if(50.merged_data != \"\"; 50.merged_data; \"BRAK DATY\")}} | {{if(50.merged_miasto != \"\"; 50.merged_miasto; \"BRAK MIASTA\")}} | {{if(43.service_type != \"\"; 43.service_type; \"BRAK USŁUGI\")}} | {{if(50.merged_imie != \"\"; 50.merged_imie; \"BRAK IMIENIA\")}}"
+                    }
+                ],
+                "scope": "roundtrip"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -280,
+                    "y": 500
+                },
+                "restore": {
+                    "expect": {
+                        "variables": {
+                            "items": [null, null, null]
+                        },
+                        "scope": { "label": "One cycle" }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "type": "array",
+                        "label": "Variables",
+                        "spec": [
+                            { "name": "name", "label": "Variable name", "type": "text", "required": true },
+                            { "name": "value", "label": "Variable value", "type": "any" }
+                        ]
+                    },
+                    { "name": "scope", "type": "select", "label": "Variable lifetime", "required": true }
+                ],
+                "interface": [
+                    { "name": "clickup_klasyfikacja", "label": "clickup_klasyfikacja", "type": "any" },
+                    { "name": "clickup_confidence", "label": "clickup_confidence", "type": "any" },
+                    { "name": "task_title", "label": "task_title", "type": "any" }
+                ]
+            }
+        },
+        {
+            "id": 47,
+            "module": "clickup:createTaskInList",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 5924155
+            },
+            "mapper": {
+                "team_id": "9015890695",
+                "space_id": "90153314249",
+                "folder_id": "901513877375",
+                "list_id": "901522503871",
+                "name": "{{46.task_title}}",
+                "content": "Zapytanie z formularza:\n\nImię i nazwisko: {{50.merged_imie}}\nEmail: {{50.merged_email}}\nTelefon: {{50.merged_telefon}}\nMiasto: {{50.merged_miasto}}\nData: {{50.merged_data}}\nGodzina: {{50.merged_godzina}}\nLiczba uczestników: {{50.merged_liczba_osob}}\nUsługa: {{43.service_type}}\nPakiet: {{50.merged_pakiet}}\nŹródło: {{43.source_brand}}\n\n---\nOryginalny tekst klienta:\n{{42.client_txt}}\n\n---\nAI: {{45.podsumowanie}}",
+                "status": "nowe zapytania",
+                "due_date_time": false,
+                "start_date_time": false,
+                "notify_all": false,
+                "custom_fields": {
+                    "19536d62-f432-4f52-b8fc-a2ab2d7bfd18": "{{50.merged_liczba_osob}}",
+                    "234795d0-c23b-4f87-9e88-28f92e65d53a": "{{50.merged_telefon}}",
+                    "29799a60-6b9d-4031-98a3-05409a8d36c4": "{{if(50.merged_data != \"\"; parseDate(50.merged_data; \"YYYY-MM-DD\"); \"\")}}",
+                    "35ee7b29-5982-401f-8501-f954253031ec": "{{51.clickup_miasto}}",
+                    "8546df9d-b46d-4c45-b491-0f62ce142b6a": "{{43.clickup_pozyskanie}}",
+                    "b65ab644-28a7-45df-b4ba-a1cdd4fba87a": "{{51.clickup_typ_imprezy}}",
+                    "bec02f93-7c1f-44fc-a1dd-669b4401cf3f": "{{51.clickup_pakiet}}",
+                    "d8265463-2ae5-4239-9126-e021a0d121fa": "{{50.merged_email}}",
+                    "da316850-f448-4513-b32a-8baa68c52cc4": "{{50.merged_godzina}}",
+                    "ea3c032c-5ead-4d14-a05f-43b8ff808f04": "{{51.clickup_usluga}}",
+                    "TODO_UUID_ZRODLO_KANAL": "Formularz",
+                    "TODO_UUID_KLASYFIKACJA_AI": "{{46.clickup_klasyfikacja}}",
+                    "TODO_UUID_AI_PODSUMOWANIE": "{{45.podsumowanie}}",
+                    "TODO_UUID_KOMPLETNOSC": "{{51.merged_completeness}}",
+                    "TODO_UUID_AI_CONFIDENCE": "{{46.clickup_confidence}}"
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 60,
+                    "y": 500
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "CLICKUP EVSO (EVSO Event Solutions)",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "clickup2"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "team_id": { "label": "EVSO" },
+                        "space_id": { "label": "EVSO" },
+                        "folder_id": { "label": "TESTOWY" },
+                        "list_id": { "label": "NOWE ZAPYTANIA TESTOWY" },
+                        "parent_task_id": { "mode": "chose" },
+                        "contentType": { "label": "Plain Text" },
+                        "assignees": { "mode": "chose" },
+                        "tags": { "mode": "chose" },
+                        "status": { "mode": "edit" },
+                        "priority": { "mode": "chose", "label": "Empty" },
+                        "due_date_time": { "mode": "chose" },
+                        "time_estimate_in": { "label": "Empty" },
+                        "start_date_time": { "mode": "chose" },
+                        "notify_all": { "mode": "chose" },
+                        "custom_fields": {
+                            "nested": {
+                                "35ee7b29-5982-401f-8501-f954253031ec": { "mode": "edit" },
+                                "8546df9d-b46d-4c45-b491-0f62ce142b6a": { "mode": "edit" },
+                                "b65ab644-28a7-45df-b4ba-a1cdd4fba87a": { "mode": "edit" },
+                                "bec02f93-7c1f-44fc-a1dd-669b4401cf3f": { "mode": "edit" },
+                                "ea3c032c-5ead-4d14-a05f-43b8ff808f04": { "mode": "edit" }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:clickup2",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    { "name": "team_id", "type": "select", "label": "Workspace", "required": true },
+                    { "name": "space_id", "type": "select", "label": "Space", "required": true },
+                    { "name": "folder_id", "type": "select", "label": "Folder", "required": true },
+                    { "name": "list_id", "type": "select", "label": "List", "required": true },
+                    { "name": "name", "type": "text", "label": "Task Name", "required": true },
+                    { "name": "content", "type": "text", "label": "Content" },
+                    { "name": "status", "type": "select", "label": "Status" },
+                    { "name": "due_date_time", "type": "boolean", "label": "Due Date Time", "required": true },
+                    { "name": "start_date_time", "type": "boolean", "label": "Start Date Time", "required": true },
+                    { "name": "notify_all", "type": "boolean", "label": "Notify All", "required": true },
+                    {
+                        "name": "custom_fields",
+                        "type": "collection",
+                        "label": "Custom Fields",
+                        "spec": [
+                            { "name": "19536d62-f432-4f52-b8fc-a2ab2d7bfd18", "type": "text", "label": "ILOŚĆ OSÓB" },
+                            { "name": "234795d0-c23b-4f87-9e88-28f92e65d53a", "type": "text", "label": "TELEFON" },
+                            { "name": "29799a60-6b9d-4031-98a3-05409a8d36c4", "type": "date", "label": "DATA EVENTU" },
+                            { "name": "35ee7b29-5982-401f-8501-f954253031ec", "type": "select", "label": "MIASTO" },
+                            { "name": "5b26ac7f-d79c-4ab6-99d8-9a1e8a85c290", "type": "select", "label": "JEDNOSTKA" },
+                            { "name": "8546df9d-b46d-4c45-b491-0f62ce142b6a", "type": "select", "label": "POZYSKANIE" },
+                            { "name": "b65ab644-28a7-45df-b4ba-a1cdd4fba87a", "type": "select", "label": "TYP IMPREZY" },
+                            { "name": "bec02f93-7c1f-44fc-a1dd-669b4401cf3f", "type": "select", "label": "PAKIET" },
+                            { "name": "d8265463-2ae5-4239-9126-e021a0d121fa", "type": "email", "label": "EMAIL" },
+                            { "name": "da316850-f448-4513-b32a-8baa68c52cc4", "type": "text", "label": "GODZINA EVENTU" },
+                            { "name": "ea3c032c-5ead-4d14-a05f-43b8ff808f04", "type": "select", "label": "USŁUGA" }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu2.make.com"
+    }
+}

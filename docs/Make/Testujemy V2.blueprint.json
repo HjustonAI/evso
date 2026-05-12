@@ -1,0 +1,3004 @@
+{
+    "name": "Testujemy V2",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 4106579,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": -3044,
+                    "y": 702
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "Forms_ai_clickup"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 33,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "miasto",
+                        "value": "{{if(lower(trim(ifempty(1.select_2; 1.`sm-city`))) = \"wybierz miejscowość\"; ; if(lower(trim(ifempty(1.select_2; 1.`sm-city`))) = \"wybierz miasto\"; ; trim(ifempty(1.select_2; 1.`sm-city`))))}}"
+                    },
+                    {
+                        "name": "rodzaj_imprezy",
+                        "value": "{{if(lower(trim(ifempty(1.select_3; ))) = \"wybierz rodzaj imprezy\"; ; trim(ifempty(1.select_3; )))}}"
+                    },
+                    {
+                        "name": "pakiet",
+                        "value": "{{if(lower(trim(ifempty(1.select_1; ))) = \"wybierz pakiet\"; ; trim(ifempty(1.select_1; )))}}"
+                    },
+                    {
+                        "name": "imie_nazwisko",
+                        "value": "{{if(lower(trim(ifempty(1.name_1; 1.`sm-name`))) = \"imię i nazwisko\"; ; if(lower(trim(ifempty(1.name_1; 1.`sm-name`))) = \"imie i nazwisko\"; ; trim(ifempty(1.name_1; 1.`sm-name`))))}}"
+                    },
+                    {
+                        "name": "email",
+                        "value": "{{if(lower(trim(ifempty(1.email_1; 1.`sm-email`))) = \"adres e-mail\"; ; if(lower(trim(ifempty(1.email_1; 1.`sm-email`))) = \"adres email\"; ; lower(trim(ifempty(1.email_1; 1.`sm-email`)))))}}"
+                    },
+                    {
+                        "name": "telefon",
+                        "value": "{{if(lower(trim(ifempty(1.phone_1; 1.`sm-phone`))) = \"numer telefonu\"; ; trim(ifempty(1.phone_1; 1.`sm-phone`)))}}"
+                    },
+                    {
+                        "name": "liczba_osob",
+                        "value": "{{if(lower(trim(ifempty(1.number_1; 1.`liczba-uczestnikow`))) = \"liczba osób\"; ; if(lower(trim(ifempty(1.number_1; 1.`liczba-uczestnikow`))) = \"liczba osob\"; ; trim(ifempty(1.number_1; 1.`liczba-uczestnikow`))))}}"
+                    },
+                    {
+                        "name": "opis",
+                        "value": "{{if(lower(trim(ifempty(1.textarea_1; 1.`sm-message`))) = \"opisz swój pomysł\"; ; if(lower(trim(ifempty(1.textarea_1; 1.`sm-message`))) = \"opisz swoj pomysl\"; ; trim(ifempty(1.textarea_1; 1.`sm-message`))))}}"
+                    },
+                    {
+                        "name": "data_eventu",
+                        "value": "{{if(lower(trim(ifempty(1.name_2; 1.termin))) = \"data\"; ; trim(ifempty(1.name_2; 1.termin)))}}"
+                    },
+                    {
+                        "name": "godzina",
+                        "value": "{{if(lower(trim(ifempty(1.name_3; 1.godzina))) = \"godzina\"; ; trim(ifempty(1.name_3; 1.godzina)))}}"
+                    },
+                    {
+                        "name": "client_txt",
+                        "value": "{{if(lower(trim(ifempty(1.textarea_1; 1.`sm-message`))) = \"opisz swój pomysł\"; ; if(lower(trim(ifempty(1.textarea_1; 1.`sm-message`))) = \"opisz swoj pomysl\"; ; trim(ifempty(1.textarea_1; 1.`sm-message`))))}}"
+                    },
+                    {
+                        "name": "source_url",
+                        "value": "{{lower(trim(ifempty(1.current_url; 1.wyslano_ze_strony)))}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": -2707,
+                    "y": 400
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Variable name",
+                                "required": true
+                            },
+                            {
+                                "name": "value",
+                                "type": "any",
+                                "label": "Variable value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Variables"
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "miasto",
+                        "type": "any",
+                        "label": "miasto"
+                    },
+                    {
+                        "name": "rodzaj_imprezy",
+                        "type": "any",
+                        "label": "rodzaj_imprezy"
+                    },
+                    {
+                        "name": "pakiet",
+                        "type": "any",
+                        "label": "pakiet"
+                    },
+                    {
+                        "name": "imie_nazwisko",
+                        "type": "any",
+                        "label": "imie_nazwisko"
+                    },
+                    {
+                        "name": "email",
+                        "type": "any",
+                        "label": "email"
+                    },
+                    {
+                        "name": "telefon",
+                        "type": "any",
+                        "label": "telefon"
+                    },
+                    {
+                        "name": "liczba_osob",
+                        "type": "any",
+                        "label": "liczba_osob"
+                    },
+                    {
+                        "name": "opis",
+                        "type": "any",
+                        "label": "opis"
+                    },
+                    {
+                        "name": "data_eventu",
+                        "type": "any",
+                        "label": "data_eventu"
+                    },
+                    {
+                        "name": "godzina",
+                        "type": "any",
+                        "label": "godzina"
+                    },
+                    {
+                        "name": "client_txt",
+                        "type": "any",
+                        "label": "client_txt"
+                    },
+                    {
+                        "name": "source_url",
+                        "type": "any",
+                        "label": "source_url"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "filter": {
+                "name": "Niepusty formularz",
+                "conditions": [
+                    [
+                        {
+                            "a": "{{33.miasto}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.rodzaj_imprezy}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.pakiet}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.imie_nazwisko}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.email}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.telefon}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.liczba_osob}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.opis}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.data_eventu}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ],
+                    [
+                        {
+                            "a": "{{33.godzina}}",
+                            "b": "",
+                            "o": "text:notequal"
+                        }
+                    ]
+                ]
+            },
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "source_brand",
+                        "value": "{{if(contains(lower(33.source_url); \"partyboat.fun\"); \"PARTYBOAT.FUN\"; if(contains(lower(33.source_url); \"boatparty.pl\"); \"BOATPARTY.PL\"; if(contains(lower(33.source_url); \"partytram.fun\"); \"PARTYTRAM.FUN\"; if(contains(lower(33.source_url); \"tramparty.pl\"); \"TRAMPARTY.PL\"; if(contains(lower(33.source_url); \"busparty\"); \"BUSPARTY.FUN\"; \"\")))))}}"
+                    },
+                    {
+                        "name": "service_type",
+                        "value": "{{if(contains(lower(33.source_url); \"partyboat.fun\"); \"BOAT\"; if(contains(lower(33.source_url); \"boatparty.pl\"); \"BOAT\"; if(contains(lower(33.source_url); \"partytram.fun\"); \"TRAM\"; if(contains(lower(33.source_url); \"tramparty.pl\"); \"TRAM\"; if(contains(lower(33.source_url); \"busparty\"); \"BUS\"; \"\")))))}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": -2227,
+                    "y": 393
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    },
+                                    "value": {
+                                        "collapsed": true
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Variable name",
+                                "required": true
+                            },
+                            {
+                                "name": "value",
+                                "type": "any",
+                                "label": "Variable value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Variables"
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "source_brand",
+                        "type": "any",
+                        "label": "source_brand"
+                    },
+                    {
+                        "name": "service_type",
+                        "type": "any",
+                        "label": "service_type"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 52,
+            "module": "anthropic-claude:createAMessage",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 13994644
+            },
+            "mapper": {
+                "model": "claude-haiku-4-5-20251001",
+                "system": "Jesteś asystentem klasyfikacji i ekstrakcji danych dla firmy eventowej EVSO (tramwaje, statki, busy imprezowe).\r\n\r\nZADANIE:\r\n1. Sklasyfikuj zapytanie klienta.\r\n2. Wyciągnij z opisu klienta brakujące dane, ale tylko dla pól oznaczonych jako [PUSTE].\r\n3. Napisz krótkie podsumowanie po polsku.\r\n\r\nKLASYFIKACJA:\r\n- goracy_lead: podane miasto + data + typ imprezy + kontakt (email lub telefon)\r\n- niekompletny_lead: intencja eventowa jasna, ale brakuje kluczowych danych\r\n- zapytanie_ogolne: pytanie o cennik, dostępność, ogólne info — nie konkretne zapytanie\r\n- spam: nie dotyczy eventów, reklama, niezrozumiałe\r\n\r\nCONFIDENCE:\r\n- wysoka: klasyfikacja oczywista\r\n- srednia: pewne niejasności\r\n- niska: dane bardzo niepełne lub sprzeczne\r\n\r\nEKSTRAKCJA:\r\n- Wyciągaj dane wyłącznie z sekcji „Opis klienta”.\r\n- Uzupełniaj tylko pola oznaczone jako [PUSTE].\r\n- Dla każdego pola, które NIE jest oznaczone jako [PUSTE], zwróć w obiekcie `ekstrakcja` wartość null, nawet jeśli ta informacja występuje w opisie.\r\n- Nie przepisuj do `ekstrakcja` danych już obecnych w formularzu.\r\n- `ekstrakcja` ma zawierać wyłącznie dane dosztukowane z opisu klienta.\r\n- Jeśli nie znalazłeś danej informacji w opisie, zwróć null.\r\n\r\nNORMALIZACJA W EKSTRAKCJI:\r\n- miasto: zwróć w mianowniku, wielkimi literami, np. \"KRAKÓW\", \"WROCŁAW\"\r\n- rodzaj_imprezy: dopasuj do jednej z wartości: \"Kawalerski\", \"Panieński\", \"Urodziny\", \"Firmówka\", \"Inne\"\r\n- liczba_osob: zwróć jako string zawierający tylko liczbę, np. \"12\"\r\n- data_eventu: format YYYY-MM-DD, jeśli możliwe\r\n- godzina: format HH:MM, jeśli możliwe\r\n- jeśli w opisie podano samą godzinę typu \"21\", zwróć \"21:00\"\n- obecny rok to 2026\r\n\r\nPODSUMOWANIE:\r\n- po polsku\r\n- 1-2 zdania\r\n- opisz czego klient szuka\r\n- jeśli brakuje danych, zaznacz to krótko\r\n\r\nWAŻNE:\r\n- Klasyfikację rób na podstawie całości danych: formularz + informacje wyciągnięte z opisu.\r\n- `ekstrakcja` nie jest finalnym rekordem klienta; to tylko brakujące pola uzupełnione z opisu.\r\n- Jeśli klient pisze o imprezie na tramwaju, statku lub busie, nie oznaczaj tego jako spam.\r\n- Placeholdery formularza typu \"Wybierz miasto\", \"Wybierz miejscowość\", \"Data\", \"Godzina\", \"Opisz swój pomysł\" traktuj jak brak danych.\r\n- Zwróć wynik zgodny ze schematem JSON.\r\n- Nie dodawaj żadnych dodatkowych pól.",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Dane z formularza (to są dane źródłowe z formularza; nie nadpisuj ich w obiekcie ekstrakcja):\r\n- Miasto: {{ifempty(trim(33.miasto); \"[PUSTE]\")}}\r\n- Rodzaj imprezy: {{ifempty(trim(33.rodzaj_imprezy); \"[PUSTE]\")}}\r\n- Pakiet: {{ifempty(trim(33.pakiet); \"[PUSTE]\")}}\r\n- Imię i nazwisko: {{ifempty(trim(33.imie_nazwisko); \"[PUSTE]\")}}\r\n- Email: {{ifempty(trim(33.email); \"[PUSTE]\")}}\r\n- Telefon: {{ifempty(trim(33.telefon); \"[PUSTE]\")}}\r\n- Liczba osób: {{ifempty(trim(33.liczba_osob); \"[PUSTE]\")}}\r\n- Data eventu: {{ifempty(trim(33.data_eventu); \"[PUSTE]\")}}\r\n- Godzina: {{ifempty(trim(33.godzina); \"[PUSTE]\")}}\r\n- Źródło: {{ifempty(trim(7.source_brand); \"[PUSTE]\")}}\r\n\r\nOpis klienta (to jest jedyne źródło do uzupełniania pól oznaczonych [PUSTE]):\r\n{{ifempty(trim(33.client_txt); \"[PUSTE]\")}}",
+                        "inputType": "single"
+                    }
+                ],
+                "metadata": {},
+                "thinking": {
+                    "type": "disabled"
+                },
+                "container": {},
+                "max_tokens": "500",
+                "temperature": "0.1",
+                "outputFormat": {
+                    "type": "json_schema",
+                    "schema": "{\r\n  \"type\": \"object\",\r\n  \"additionalProperties\": false,\r\n  \"properties\": {\r\n    \"klasyfikacja\": {\r\n      \"type\": \"string\",\r\n      \"enum\": [\r\n        \"goracy_lead\",\r\n        \"niekompletny_lead\",\r\n        \"zapytanie_ogolne\",\r\n        \"spam\"\r\n      ]\r\n    },\r\n    \"confidence\": {\r\n      \"type\": \"string\",\r\n      \"enum\": [\r\n        \"wysoka\",\r\n        \"srednia\",\r\n        \"niska\"\r\n      ]\r\n    },\r\n    \"podsumowanie\": {\r\n      \"type\": \"string\"\r\n    },\r\n    \"ekstrakcja\": {\r\n      \"type\": \"object\",\r\n      \"additionalProperties\": false,\r\n      \"properties\": {\r\n        \"miasto\": { \"type\": [\"string\", \"null\"] },\r\n        \"data_eventu\": { \"type\": [\"string\", \"null\"] },\r\n        \"godzina\": { \"type\": [\"string\", \"null\"] },\r\n        \"liczba_osob\": { \"type\": [\"string\", \"null\"] },\r\n        \"rodzaj_imprezy\": { \"type\": [\"string\", \"null\"] },\r\n        \"pakiet\": { \"type\": [\"string\", \"null\"] },\r\n        \"imie_nazwisko\": { \"type\": [\"string\", \"null\"] },\r\n        \"telefon\": { \"type\": [\"string\", \"null\"] },\r\n        \"email\": { \"type\": [\"string\", \"null\"] }\r\n      },\r\n      \"required\": [\r\n        \"miasto\",\r\n        \"data_eventu\",\r\n        \"godzina\",\r\n        \"liczba_osob\",\r\n        \"rodzaj_imprezy\",\r\n        \"pakiet\",\r\n        \"imie_nazwisko\",\r\n        \"telefon\",\r\n        \"email\"\r\n      ]\r\n    }\r\n  },\r\n  \"required\": [\r\n    \"klasyfikacja\",\r\n    \"confidence\",\r\n    \"podsumowanie\",\r\n    \"ekstrakcja\"\r\n  ]\r\n}"
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": -1903,
+                    "y": 705
+                },
+                "restore": {
+                    "expect": {
+                        "model": {
+                            "mode": "chose",
+                            "label": "Claude Haiku 4.5"
+                        },
+                        "messages": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "User"
+                                    },
+                                    "inputType": {
+                                        "mode": "chose",
+                                        "label": "Single string"
+                                    }
+                                }
+                            ]
+                        },
+                        "thinking": {
+                            "nested": {
+                                "type": {
+                                    "mode": "chose",
+                                    "label": "Disabled"
+                                }
+                            }
+                        },
+                        "container": {
+                            "nested": {
+                                "skills": {
+                                    "mode": "chose"
+                                }
+                            }
+                        },
+                        "outputFormat": {
+                            "nested": {
+                                "type": {
+                                    "mode": "chose",
+                                    "label": "JSON schema"
+                                }
+                            }
+                        },
+                        "stop_sequences": {
+                            "mode": "chose"
+                        },
+                        "additionalParameters": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "anthropic-claude"
+                            },
+                            "label": "My Anthropic Claude connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:anthropic-claude",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "Model",
+                        "required": true
+                    },
+                    {
+                        "name": "max_tokens",
+                        "type": "uinteger",
+                        "label": "Max Tokens",
+                        "required": true
+                    },
+                    {
+                        "name": "messages",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "role",
+                                    "type": "select",
+                                    "label": "Role",
+                                    "options": [
+                                        {
+                                            "label": "User",
+                                            "value": "user",
+                                            "nested": [
+                                                {
+                                                    "name": "inputType",
+                                                    "type": "select",
+                                                    "label": "Input Type",
+                                                    "default": "multiple",
+                                                    "options": [
+                                                        {
+                                                            "label": "Single string",
+                                                            "value": "single",
+                                                            "nested": [
+                                                                {
+                                                                    "help": "If the request ends with an assistant turn, then the response content will continue directly from that last turn.",
+                                                                    "name": "content",
+                                                                    "type": "text",
+                                                                    "label": "Content",
+                                                                    "required": true
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "label": "Multiple content blocks",
+                                                            "value": "multiple",
+                                                            "nested": [
+                                                                {
+                                                                    "name": "content",
+                                                                    "spec": {
+                                                                        "spec": [
+                                                                            {
+                                                                                "help": "For models that support image content blocks (vision), see the [Anthropic model comparison table](https://docs.anthropic.com/en/docs/about-claude/models#model-comparison-table).",
+                                                                                "name": "type",
+                                                                                "type": "select",
+                                                                                "label": "Type",
+                                                                                "options": [
+                                                                                    {
+                                                                                        "label": "Text",
+                                                                                        "value": "text",
+                                                                                        "nested": [
+                                                                                            {
+                                                                                                "help": "Content of the message on behalf of the selected **Role** .",
+                                                                                                "name": "text",
+                                                                                                "type": "text",
+                                                                                                "label": "Text",
+                                                                                                "required": true
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    {
+                                                                                        "label": "Image",
+                                                                                        "value": "image",
+                                                                                        "nested": [
+                                                                                            {
+                                                                                                "name": "source",
+                                                                                                "spec": [
+                                                                                                    {
+                                                                                                        "help": "File name, including the extension, for example, `image.jpg`.",
+                                                                                                        "name": "filename",
+                                                                                                        "type": "filename",
+                                                                                                        "label": "Filename",
+                                                                                                        "required": true,
+                                                                                                        "semantic": "file:name",
+                                                                                                        "extension": [
+                                                                                                            "jpeg",
+                                                                                                            "jpg",
+                                                                                                            "png",
+                                                                                                            "gif",
+                                                                                                            "webp"
+                                                                                                        ]
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "help": "Binary data of the image. For example, you can retrieve the binary data of your image using the **HTTP: Get a file** module.",
+                                                                                                        "name": "data",
+                                                                                                        "type": "buffer",
+                                                                                                        "label": "Data",
+                                                                                                        "required": true,
+                                                                                                        "semantic": "file:data"
+                                                                                                    }
+                                                                                                ],
+                                                                                                "type": "collection",
+                                                                                                "label": "Source",
+                                                                                                "required": true
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    {
+                                                                                        "label": "PDF document",
+                                                                                        "value": "document",
+                                                                                        "nested": [
+                                                                                            {
+                                                                                                "name": "pdfFileName",
+                                                                                                "type": "filename",
+                                                                                                "label": "Filename",
+                                                                                                "required": true,
+                                                                                                "semantic": "file:name",
+                                                                                                "extension": [
+                                                                                                    "pdf"
+                                                                                                ]
+                                                                                            },
+                                                                                            {
+                                                                                                "name": "pdfFileData",
+                                                                                                "type": "buffer",
+                                                                                                "label": "Data",
+                                                                                                "required": true,
+                                                                                                "semantic": "file:data"
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    {
+                                                                                        "label": "Tool result",
+                                                                                        "value": "tool_result",
+                                                                                        "nested": [
+                                                                                            {
+                                                                                                "name": "tool_use_id",
+                                                                                                "type": "text",
+                                                                                                "label": "Tool Use ID",
+                                                                                                "required": true
+                                                                                            },
+                                                                                            {
+                                                                                                "name": "inputType",
+                                                                                                "type": "select",
+                                                                                                "label": "Input Type",
+                                                                                                "default": "single",
+                                                                                                "options": [
+                                                                                                    {
+                                                                                                        "label": "Single string",
+                                                                                                        "value": "single",
+                                                                                                        "nested": [
+                                                                                                            {
+                                                                                                                "help": "If the request ends with an assistant turn, then the response content will continue directly from that last turn.",
+                                                                                                                "name": "content",
+                                                                                                                "type": "text",
+                                                                                                                "label": "Content",
+                                                                                                                "required": true
+                                                                                                            }
+                                                                                                        ]
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "label": "Multiple content blocks",
+                                                                                                        "value": "multiple",
+                                                                                                        "nested": [
+                                                                                                            {
+                                                                                                                "name": "content",
+                                                                                                                "spec": {
+                                                                                                                    "spec": [
+                                                                                                                        {
+                                                                                                                            "help": "For models that support image content blocks (vision), see the [Anthropic model comparison table](https://docs.anthropic.com/en/docs/about-claude/models#model-comparison-table).",
+                                                                                                                            "name": "type",
+                                                                                                                            "type": "select",
+                                                                                                                            "label": "Type",
+                                                                                                                            "options": [
+                                                                                                                                {
+                                                                                                                                    "label": "Text",
+                                                                                                                                    "value": "text",
+                                                                                                                                    "nested": [
+                                                                                                                                        {
+                                                                                                                                            "help": "Content of the message on behalf of the selected **Role** .",
+                                                                                                                                            "name": "text",
+                                                                                                                                            "type": "text",
+                                                                                                                                            "label": "Text",
+                                                                                                                                            "required": true
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "label": "Image",
+                                                                                                                                    "value": "image",
+                                                                                                                                    "nested": [
+                                                                                                                                        {
+                                                                                                                                            "name": "source",
+                                                                                                                                            "spec": [
+                                                                                                                                                {
+                                                                                                                                                    "help": "File name, including the extension, for example, `image.jpg`.",
+                                                                                                                                                    "name": "filename",
+                                                                                                                                                    "type": "filename",
+                                                                                                                                                    "label": "Filename",
+                                                                                                                                                    "required": true,
+                                                                                                                                                    "semantic": "file:name",
+                                                                                                                                                    "extension": [
+                                                                                                                                                        "jpeg",
+                                                                                                                                                        "jpg",
+                                                                                                                                                        "png",
+                                                                                                                                                        "gif",
+                                                                                                                                                        "webp"
+                                                                                                                                                    ]
+                                                                                                                                                },
+                                                                                                                                                {
+                                                                                                                                                    "help": "Binary data of the image. For example, you can retrieve the binary data of your image using the **HTTP: Get a file** module.",
+                                                                                                                                                    "name": "data",
+                                                                                                                                                    "type": "buffer",
+                                                                                                                                                    "label": "Data",
+                                                                                                                                                    "required": true,
+                                                                                                                                                    "semantic": "file:data"
+                                                                                                                                                }
+                                                                                                                                            ],
+                                                                                                                                            "type": "collection",
+                                                                                                                                            "label": "Source",
+                                                                                                                                            "required": true
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "label": "PDF document",
+                                                                                                                                    "value": "document",
+                                                                                                                                    "nested": [
+                                                                                                                                        {
+                                                                                                                                            "name": "pdfFileName",
+                                                                                                                                            "type": "filename",
+                                                                                                                                            "label": "Filename",
+                                                                                                                                            "required": true,
+                                                                                                                                            "semantic": "file:name",
+                                                                                                                                            "extension": [
+                                                                                                                                                "pdf"
+                                                                                                                                            ]
+                                                                                                                                        },
+                                                                                                                                        {
+                                                                                                                                            "name": "pdfFileData",
+                                                                                                                                            "type": "buffer",
+                                                                                                                                            "label": "Data",
+                                                                                                                                            "required": true,
+                                                                                                                                            "semantic": "file:data"
+                                                                                                                                        }
+                                                                                                                                    ]
+                                                                                                                                }
+                                                                                                                            ],
+                                                                                                                            "required": true
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                                    "type": "collection",
+                                                                                                                    "label": "Content"
+                                                                                                                },
+                                                                                                                "type": "array",
+                                                                                                                "label": "Content",
+                                                                                                                "labels": {
+                                                                                                                    "add": "Add content"
+                                                                                                                },
+                                                                                                                "required": true
+                                                                                                            }
+                                                                                                        ]
+                                                                                                    }
+                                                                                                ],
+                                                                                                "mappable": false,
+                                                                                                "required": true
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                ],
+                                                                                "required": true
+                                                                            }
+                                                                        ],
+                                                                        "type": "collection",
+                                                                        "label": "Content"
+                                                                    },
+                                                                    "type": "array",
+                                                                    "label": "Content",
+                                                                    "labels": {
+                                                                        "add": "Add content"
+                                                                    },
+                                                                    "required": true
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": false,
+                                                    "required": true
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "Assistant",
+                                            "value": "assistant",
+                                            "nested": [
+                                                {
+                                                    "name": "inputType",
+                                                    "type": "select",
+                                                    "label": "Input Type",
+                                                    "default": "single",
+                                                    "options": [
+                                                        {
+                                                            "label": "Single string",
+                                                            "value": "single",
+                                                            "nested": [
+                                                                {
+                                                                    "help": "If the request ends with an assistant turn, then the response content will continue directly from that last turn.",
+                                                                    "name": "content",
+                                                                    "type": "text",
+                                                                    "label": "Content",
+                                                                    "required": true
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "label": "Multiple content blocks",
+                                                            "value": "multiple",
+                                                            "nested": [
+                                                                {
+                                                                    "name": "content",
+                                                                    "spec": {
+                                                                        "spec": [
+                                                                            {
+                                                                                "help": "For models that support image content blocks (vision), see the [Anthropic model comparison table](https://docs.anthropic.com/en/docs/about-claude/models#model-comparison-table).",
+                                                                                "name": "type",
+                                                                                "type": "select",
+                                                                                "label": "Type",
+                                                                                "options": [
+                                                                                    {
+                                                                                        "label": "Text",
+                                                                                        "value": "text",
+                                                                                        "nested": [
+                                                                                            {
+                                                                                                "help": "Content of the message on behalf of the selected **Role** .",
+                                                                                                "name": "text",
+                                                                                                "type": "text",
+                                                                                                "label": "Text",
+                                                                                                "required": true
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    {
+                                                                                        "label": "Tool use",
+                                                                                        "value": "tool_use",
+                                                                                        "nested": [
+                                                                                            {
+                                                                                                "name": "id",
+                                                                                                "type": "text",
+                                                                                                "label": "Tool ID",
+                                                                                                "required": true
+                                                                                            },
+                                                                                            {
+                                                                                                "name": "name",
+                                                                                                "type": "text",
+                                                                                                "label": "Name",
+                                                                                                "required": true
+                                                                                            },
+                                                                                            {
+                                                                                                "help": "To map a value from a previous module, follow the syntax `{{1.id}}`.",
+                                                                                                "name": "input",
+                                                                                                "type": "editor",
+                                                                                                "label": "Tool input",
+                                                                                                "editor": "monaco",
+                                                                                                "default": "{}",
+                                                                                                "language": "json",
+                                                                                                "required": true
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                ],
+                                                                                "required": true
+                                                                            }
+                                                                        ],
+                                                                        "type": "collection",
+                                                                        "label": "Content"
+                                                                    },
+                                                                    "type": "array",
+                                                                    "label": "Content",
+                                                                    "labels": {
+                                                                        "add": "Add content"
+                                                                    },
+                                                                    "required": true
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": false,
+                                                    "required": true
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "required": true
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Message"
+                        },
+                        "type": "array",
+                        "label": "Messages",
+                        "required": true
+                    },
+                    {
+                        "name": "thinking",
+                        "spec": [
+                            {
+                                "name": "type",
+                                "type": "select",
+                                "label": "Type",
+                                "validate": {
+                                    "enum": [
+                                        "enabled",
+                                        "disabled"
+                                    ]
+                                }
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Extended Thinking"
+                    },
+                    {
+                        "name": "container",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "Container ID"
+                            },
+                            {
+                                "name": "skills",
+                                "spec": {
+                                    "name": "value",
+                                    "spec": [
+                                        {
+                                            "name": "type",
+                                            "type": "select",
+                                            "label": "Type",
+                                            "options": {
+                                                "store": [
+                                                    {
+                                                        "label": "Custom",
+                                                        "value": "custom"
+                                                    },
+                                                    {
+                                                        "label": "Anthropic",
+                                                        "value": "anthropic"
+                                                    }
+                                                ]
+                                            },
+                                            "required": true
+                                        }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Skill"
+                                },
+                                "type": "array",
+                                "label": "Skills",
+                                "validate": {
+                                    "maxItems": 8
+                                }
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Container"
+                    },
+                    {
+                        "name": "system",
+                        "type": "text",
+                        "label": "System Prompt"
+                    },
+                    {
+                        "name": "metadata",
+                        "spec": [
+                            {
+                                "name": "user_id",
+                                "type": "text",
+                                "label": "User ID"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Metadata"
+                    },
+                    {
+                        "name": "stop_sequences",
+                        "spec": {
+                            "name": "value",
+                            "type": "text",
+                            "label": "Stop Sequence"
+                        },
+                        "type": "array",
+                        "label": "Stop Sequences"
+                    },
+                    {
+                        "name": "temperature",
+                        "type": "number",
+                        "label": "Temperature",
+                        "validate": {
+                            "max": 1,
+                            "min": 0
+                        }
+                    },
+                    {
+                        "name": "top_p",
+                        "type": "number",
+                        "label": "Top P",
+                        "validate": {
+                            "max": 1
+                        }
+                    },
+                    {
+                        "name": "top_k",
+                        "type": "uinteger",
+                        "label": "Top K"
+                    },
+                    {
+                        "name": "outputFormat",
+                        "spec": [
+                            {
+                                "name": "type",
+                                "type": "select",
+                                "label": "Type",
+                                "validate": {
+                                    "enum": [
+                                        "text",
+                                        "json_schema"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "schema",
+                                "type": "json",
+                                "label": "Schema",
+                                "required": true
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Output Format"
+                    },
+                    {
+                        "name": "additionalParameters",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "key",
+                                    "type": "text",
+                                    "label": "Parameter Name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "select",
+                                    "label": "Input Type",
+                                    "options": [
+                                        {
+                                            "label": "Text",
+                                            "value": "text",
+                                            "nested": [
+                                                {
+                                                    "name": "value",
+                                                    "type": "text",
+                                                    "label": "Parameter Value"
+                                                }
+                                            ],
+                                            "default": true
+                                        },
+                                        {
+                                            "label": "Number",
+                                            "value": "number",
+                                            "nested": [
+                                                {
+                                                    "name": "value",
+                                                    "type": "number",
+                                                    "label": "Parameter Value"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "Boolean",
+                                            "value": "boolean",
+                                            "nested": [
+                                                {
+                                                    "name": "value",
+                                                    "type": "boolean",
+                                                    "label": "Parameter Value"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "Date",
+                                            "value": "date",
+                                            "nested": [
+                                                {
+                                                    "name": "value",
+                                                    "type": "date",
+                                                    "label": "Parameter Value"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "Tools",
+                                            "value": "tools",
+                                            "nested": [
+                                                {
+                                                    "name": "value",
+                                                    "spec": {
+                                                        "type": "text",
+                                                        "label": "Parameter Value"
+                                                    },
+                                                    "type": "array",
+                                                    "label": "Parameter Values",
+                                                    "labels": {
+                                                        "add": "Add parameter value"
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "label": "Any",
+                                            "value": "any",
+                                            "nested": [
+                                                {
+                                                    "name": "value",
+                                                    "type": "any",
+                                                    "label": "Parameter Value"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Input Parameter"
+                        },
+                        "type": "array",
+                        "label": "Other Input Parameters"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "files",
+                        "spec": [
+                            {
+                                "name": "fileName",
+                                "type": "filename",
+                                "label": "File Name",
+                                "semantic": "file:name"
+                            },
+                            {
+                                "name": "fileData",
+                                "type": "buffer",
+                                "label": "File Data",
+                                "semantic": "file:data"
+                            },
+                            {
+                                "name": "fileId",
+                                "type": "text",
+                                "label": "File ID"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Files"
+                    },
+                    {
+                        "name": "jsonResponse",
+                        "spec": [
+                            {
+                                "name": "klasyfikacja",
+                                "type": "text",
+                                "label": "Klasyfikacja"
+                            },
+                            {
+                                "name": "confidence",
+                                "type": "text",
+                                "label": "Confidence"
+                            },
+                            {
+                                "name": "podsumowanie",
+                                "type": "text",
+                                "label": "Podsumowanie"
+                            },
+                            {
+                                "name": "ekstrakcja",
+                                "spec": [
+                                    {
+                                        "name": "miasto",
+                                        "type": "text",
+                                        "label": "Miasto"
+                                    },
+                                    {
+                                        "name": "data_eventu",
+                                        "type": "text",
+                                        "label": "Data Eventu"
+                                    },
+                                    {
+                                        "name": "godzina",
+                                        "type": "text",
+                                        "label": "Godzina"
+                                    },
+                                    {
+                                        "name": "liczba_osob",
+                                        "type": "text",
+                                        "label": "Liczba Osob"
+                                    },
+                                    {
+                                        "name": "rodzaj_imprezy",
+                                        "type": "text",
+                                        "label": "Rodzaj Imprezy"
+                                    },
+                                    {
+                                        "name": "pakiet",
+                                        "type": "text",
+                                        "label": "Pakiet"
+                                    },
+                                    {
+                                        "name": "imie_nazwisko",
+                                        "type": "text",
+                                        "label": "Imie Nazwisko"
+                                    },
+                                    {
+                                        "name": "telefon",
+                                        "type": "text",
+                                        "label": "Telefon"
+                                    },
+                                    {
+                                        "name": "email",
+                                        "type": "text",
+                                        "label": "Email"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Ekstrakcja"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "JSON Response"
+                    },
+                    {
+                        "name": "rawResponse",
+                        "type": "text",
+                        "label": "Raw Response"
+                    },
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Unique ID"
+                    },
+                    {
+                        "name": "type",
+                        "type": "text",
+                        "label": "Type"
+                    },
+                    {
+                        "name": "role",
+                        "type": "text",
+                        "label": "Role"
+                    },
+                    {
+                        "name": "content",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "type",
+                                    "type": "text",
+                                    "label": "Type"
+                                },
+                                {
+                                    "name": "thinking",
+                                    "type": "text",
+                                    "label": "Thinking"
+                                },
+                                {
+                                    "name": "signature",
+                                    "type": "text",
+                                    "label": "Signature"
+                                },
+                                {
+                                    "name": "text",
+                                    "type": "text",
+                                    "label": "Text"
+                                },
+                                {
+                                    "name": "id",
+                                    "type": "text",
+                                    "label": "ID"
+                                },
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name"
+                                },
+                                {
+                                    "name": "input",
+                                    "spec": [],
+                                    "type": "collection",
+                                    "label": "Input"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Content"
+                    },
+                    {
+                        "name": "model",
+                        "type": "text",
+                        "label": "Model"
+                    },
+                    {
+                        "name": "container",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "ID"
+                            },
+                            {
+                                "name": "expires_at",
+                                "type": "date",
+                                "label": "Expires at"
+                            },
+                            {
+                                "name": "skills",
+                                "spec": {
+                                    "spec": [
+                                        {
+                                            "name": "type",
+                                            "type": "text",
+                                            "label": "Type"
+                                        },
+                                        {
+                                            "name": "skill_id",
+                                            "type": "text",
+                                            "label": "Skill ID"
+                                        },
+                                        {
+                                            "name": "version",
+                                            "type": "text",
+                                            "label": "Version"
+                                        }
+                                    ],
+                                    "type": "collection"
+                                },
+                                "type": "array",
+                                "label": "Skills"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Container"
+                    },
+                    {
+                        "name": "stop_reason",
+                        "type": "text",
+                        "label": "Stop Reason"
+                    },
+                    {
+                        "name": "stop_sequence",
+                        "type": "text",
+                        "label": "Stop Sequence"
+                    },
+                    {
+                        "name": "usage",
+                        "spec": [
+                            {
+                                "name": "input_tokens",
+                                "type": "uinteger",
+                                "label": "Input Tokens"
+                            },
+                            {
+                                "name": "cache_creation_input_tokens",
+                                "type": "number",
+                                "label": "Cache Creation Input Tokens"
+                            },
+                            {
+                                "name": "cache_read_input_tokens",
+                                "type": "number",
+                                "label": "Cache Read Input Tokens"
+                            },
+                            {
+                                "name": "output_tokens",
+                                "type": "uinteger",
+                                "label": "Output Tokens"
+                            },
+                            {
+                                "name": "cache_creation",
+                                "spec": [
+                                    {
+                                        "name": "ephemeral_5m_input_tokens",
+                                        "type": "number",
+                                        "label": "Ephemeral 5m Input Tokens"
+                                    },
+                                    {
+                                        "name": "ephemeral_1h_input_tokens",
+                                        "type": "number",
+                                        "label": "Ephemeral 1h Input Tokens"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Cache Creation"
+                            },
+                            {
+                                "name": "service_tier",
+                                "type": "text",
+                                "label": "Service Tier"
+                            },
+                            {
+                                "name": "server_tool_use",
+                                "spec": [
+                                    {
+                                        "name": "web_search_requests",
+                                        "type": "number",
+                                        "label": "Web Search Requests"
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Server Tool  Use"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Usage"
+                    },
+                    {
+                        "name": "tools",
+                        "spec": [],
+                        "type": "collection",
+                        "label": "Tools"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 54,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "merged_miasto",
+                        "value": "{{upper(trim(ifempty(33.miasto; 52.jsonResponse.ekstrakcja.miasto)))}}"
+                    },
+                    {
+                        "name": "merged_rodzaj_imprezy",
+                        "value": "{{if(contains(lower(trim(ifempty(33.rodzaj_imprezy; 52.jsonResponse.ekstrakcja.rodzaj_imprezy))); \"kawalers\"); \"KAWALERSKI\"; if(contains(lower(trim(ifempty(33.rodzaj_imprezy; 52.jsonResponse.ekstrakcja.rodzaj_imprezy))); \"panień\"); \"PANIEŃSKI\"; if(contains(lower(trim(ifempty(33.rodzaj_imprezy; 52.jsonResponse.ekstrakcja.rodzaj_imprezy))); \"paniensk\"); \"PANIEŃSKI\"; if(contains(lower(trim(ifempty(33.rodzaj_imprezy; 52.jsonResponse.ekstrakcja.rodzaj_imprezy))); \"urodzin\"); \"URODZINY\"; if(contains(lower(trim(ifempty(33.rodzaj_imprezy; 52.jsonResponse.ekstrakcja.rodzaj_imprezy))); \"firm\"); \"FIRMÓWKA\"; trim(ifempty(33.rodzaj_imprezy; 52.jsonResponse.ekstrakcja.rodzaj_imprezy)))))))}}"
+                    },
+                    {
+                        "name": "merged_pakiet",
+                        "value": "{{trim(ifempty(33.pakiet; 52.jsonResponse.ekstrakcja.pakiet))}}"
+                    },
+                    {
+                        "name": "merged_imie",
+                        "value": "{{trim(ifempty(33.imie_nazwisko; 52.jsonResponse.ekstrakcja.imie_nazwisko))}}"
+                    },
+                    {
+                        "name": "merged_email",
+                        "value": "{{lower(trim(ifempty(33.email; 52.jsonResponse.ekstrakcja.email)))}}"
+                    },
+                    {
+                        "name": "merged_telefon",
+                        "value": "{{trim(ifempty(33.telefon; 52.jsonResponse.ekstrakcja.telefon))}}"
+                    },
+                    {
+                        "name": "merged_liczba_osob",
+                        "value": "{{trim(ifempty(33.liczba_osob; 52.jsonResponse.ekstrakcja.liczba_osob))}}"
+                    },
+                    {
+                        "name": "merged_data",
+                        "value": "{{if(length(trim(ifempty(33.data_eventu; 52.jsonResponse.ekstrakcja.data_eventu))) > 0; if(contains(trim(ifempty(33.data_eventu; 52.jsonResponse.ekstrakcja.data_eventu)); \".\"); formatDate(parseDate(trim(ifempty(33.data_eventu; 52.jsonResponse.ekstrakcja.data_eventu)); \"dd.MM.yyyy\"); \"yyyy-MM-dd\"); trim(ifempty(33.data_eventu; 52.jsonResponse.ekstrakcja.data_eventu))); )}}"
+                    },
+                    {
+                        "name": "merged_godzina",
+                        "value": "{{trim(ifempty(33.godzina; 52.jsonResponse.ekstrakcja.godzina))}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": -1520,
+                    "y": 694
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Variable name",
+                                "required": true
+                            },
+                            {
+                                "name": "value",
+                                "type": "any",
+                                "label": "Variable value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Variables"
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "merged_miasto",
+                        "type": "any",
+                        "label": "merged_miasto"
+                    },
+                    {
+                        "name": "merged_rodzaj_imprezy",
+                        "type": "any",
+                        "label": "merged_rodzaj_imprezy"
+                    },
+                    {
+                        "name": "merged_pakiet",
+                        "type": "any",
+                        "label": "merged_pakiet"
+                    },
+                    {
+                        "name": "merged_imie",
+                        "type": "any",
+                        "label": "merged_imie"
+                    },
+                    {
+                        "name": "merged_email",
+                        "type": "any",
+                        "label": "merged_email"
+                    },
+                    {
+                        "name": "merged_telefon",
+                        "type": "any",
+                        "label": "merged_telefon"
+                    },
+                    {
+                        "name": "merged_liczba_osob",
+                        "type": "any",
+                        "label": "merged_liczba_osob"
+                    },
+                    {
+                        "name": "merged_data",
+                        "type": "any",
+                        "label": "merged_data"
+                    },
+                    {
+                        "name": "merged_godzina",
+                        "type": "any",
+                        "label": "merged_godzina"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 55,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "merged_completeness",
+                        "value": "{{round((((if(length(trim(ifempty(54.merged_imie; ))) > 0; 1; 0)) + (if(length(trim(ifempty(54.merged_email; ))) > 0; 1; 0)) + (if(length(trim(ifempty(54.merged_telefon; ))) > 0; 1; 0)) + (if(length(trim(ifempty(54.merged_miasto; ))) > 0; 1; 0)) + (if(length(trim(ifempty(54.merged_data; ))) > 0; 1; 0)) + (if(length(trim(ifempty(54.merged_godzina; ))) > 0; 1; 0)) + (if(length(trim(ifempty(54.merged_liczba_osob; ))) > 0; 1; 0)) + (if(length(trim(ifempty(54.merged_rodzaj_imprezy; ))) > 0; 1; 0))) / 8 * 100))}}"
+                    },
+                    {
+                        "name": "clickup_miasto",
+                        "value": "{{if(54.merged_miasto = \"WROCŁAW\"; 0; if(54.merged_miasto = \"POZNAŃ\"; 1; if(54.merged_miasto = \"KRAKÓW\"; 2; if(54.merged_miasto = \"GDAŃSK\"; 3; if(54.merged_miasto = \"ŁÓDŹ\"; 4; if(54.merged_miasto = \"BYDGOSZCZ\"; 5; if(54.merged_miasto = \"TORUŃ\"; 6; if(54.merged_miasto = \"KATOWICE\"; 7; if(54.merged_miasto = \"SZCZECIN\"; 8; if(54.merged_miasto = \"WARSZAWA\"; 9; if(54.merged_miasto = \"SOPOT\"; 10; )))))))))))}}"
+                    },
+                    {
+                        "name": "clickup_pakiet",
+                        "value": "{{if(upper(trim(54.merged_pakiet)) = \"FUN\"; 0; if(upper(trim(54.merged_pakiet)) = \"PARTY\"; 1; if(upper(trim(54.merged_pakiet)) = \"LUX\"; 2; if(upper(trim(54.merged_pakiet)) = \"INDYVIDUAL !\"; 3; if(upper(trim(54.merged_pakiet)) = \"INDIVIDUAL !\"; 3; if(upper(trim(54.merged_pakiet)) = \"INVIDUAL II\"; 4; if(upper(trim(54.merged_pakiet)) = \"INDIVIDUAL II\"; 4; )))))))}}"
+                    },
+                    {
+                        "name": "clickup_typ_imprezy",
+                        "value": "{{if(54.merged_rodzaj_imprezy = \"KAWALERSKI\"; 0; if(54.merged_rodzaj_imprezy = \"PANIEŃSKI\"; 1; if(54.merged_rodzaj_imprezy = \"URODZINY\"; 2; if(54.merged_rodzaj_imprezy = \"FIRMÓWKA\"; 3; if(54.merged_rodzaj_imprezy = \"INNE\"; 4; )))))}}"
+                    },
+                    {
+                        "name": "clickup_usluga",
+                        "value": "{{if(7.service_type = \"BOAT\"; 0; if(7.service_type = \"TRAM\"; 1; if(7.service_type = \"BUS\"; 2; )))}}"
+                    },
+                    {
+                        "name": "clickup_pozyskanie",
+                        "value": "{{if(7.source_brand = \"MAIL\"; 0; if(7.source_brand = \"TELEFON\"; 1; if(7.source_brand = \"PARTYBOAT.FUN\"; 2; if(7.source_brand = \"BOATPARTY.PL\"; 3; if(7.source_brand = \"PARTYTRAM.FUN\"; 4; if(7.source_brand = \"TRAMPARTY.PL\"; 5; ))))))}}"
+                    },
+                    {
+                        "name": "task_date_display",
+                        "value": "{{if(length(trim(ifempty(54.merged_data; ))) > 0; formatDate(parseDate(trim(54.merged_data); \"YYYY-MM-DD\"); \"DD-MM-YYYY\"); \"BRAK DATY\")}}"
+                    },
+                    {
+                        "name": "clickup_data_eventu",
+                        "value": "{{if(length(trim(ifempty(54.merged_data; ))) > 0; parseDate(trim(54.merged_data); \"YYYY-MM-DD\"); )}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": -1141,
+                    "y": 690
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    },
+                                    "value": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    },
+                                    "value": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    },
+                                    "value": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    },
+                                    "value": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    },
+                                    "value": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Variable name",
+                                "required": true
+                            },
+                            {
+                                "name": "value",
+                                "type": "any",
+                                "label": "Variable value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Variables"
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "merged_completeness",
+                        "type": "any",
+                        "label": "merged_completeness"
+                    },
+                    {
+                        "name": "clickup_miasto",
+                        "type": "any",
+                        "label": "clickup_miasto"
+                    },
+                    {
+                        "name": "clickup_pakiet",
+                        "type": "any",
+                        "label": "clickup_pakiet"
+                    },
+                    {
+                        "name": "clickup_typ_imprezy",
+                        "type": "any",
+                        "label": "clickup_typ_imprezy"
+                    },
+                    {
+                        "name": "clickup_usluga",
+                        "type": "any",
+                        "label": "clickup_usluga"
+                    },
+                    {
+                        "name": "clickup_pozyskanie",
+                        "type": "any",
+                        "label": "clickup_pozyskanie"
+                    },
+                    {
+                        "name": "task_date_display",
+                        "type": "any",
+                        "label": "task_date_display"
+                    },
+                    {
+                        "name": "clickup_data_eventu",
+                        "type": "any",
+                        "label": "clickup_data_eventu"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 20,
+            "module": "util:SetVariables",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+                "scope": "roundtrip",
+                "variables": [
+                    {
+                        "name": "clickup_klasyfikacja",
+                        "value": "{{if(52.jsonResponse.klasyfikacja = \"goracy_lead\"; \"Gorący lead\"; if(52.jsonResponse.klasyfikacja = \"niekompletny_lead\"; \"Niekompletny lead\"; if(52.jsonResponse.klasyfikacja = \"zapytanie_ogolne\"; \"Zapytanie ogólne\"; if(52.jsonResponse.klasyfikacja = \"spam\"; \"Spam\"; \"Do weryfikacji\"))))}}"
+                    },
+                    {
+                        "name": "clickup_confidence",
+                        "value": "{{if(52.jsonResponse.confidence = \"wysoka\"; \"Wysoka\"; if(52.jsonResponse.confidence = \"srednia\"; \"Średnia\"; if(52.jsonResponse.confidence = \"niska\"; \"Niska\"; \"Niska\")))}}"
+                    }
+                ]
+            },
+            "metadata": {
+                "designer": {
+                    "x": -880,
+                    "y": 689
+                },
+                "restore": {
+                    "expect": {
+                        "scope": {
+                            "label": "One cycle"
+                        },
+                        "variables": {
+                            "items": [
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    }
+                                },
+                                {
+                                    "name": {
+                                        "collapsed": true
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "expect": [
+                    {
+                        "name": "variables",
+                        "spec": [
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Variable name",
+                                "required": true
+                            },
+                            {
+                                "name": "value",
+                                "type": "any",
+                                "label": "Variable value"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Variables"
+                    },
+                    {
+                        "name": "scope",
+                        "type": "select",
+                        "label": "Variable lifetime",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "roundtrip",
+                                "execution"
+                            ]
+                        }
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "clickup_klasyfikacja",
+                        "type": "any",
+                        "label": "clickup_klasyfikacja"
+                    },
+                    {
+                        "name": "clickup_confidence",
+                        "type": "any",
+                        "label": "clickup_confidence"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "module": "clickup:createTaskInList",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 5924155
+            },
+            "mapper": {
+                "team_id": "9015890695",
+                "space_id": "90153314249",
+                "folder_id": "901513877375",
+                "list_id": "901522503871",
+                "name": "{{55.task_date_display}} | {{ifempty(54.merged_miasto; \"BRAK MIASTA\")}} | {{ifempty(7.service_type; \"BRAK USŁUGI\")}} | {{ifempty(54.merged_imie; \"BRAK IMIENIA\")}}",
+                "content": "Zapytanie z formularza:\r\n\r\nOryginalny tekst: {{33.opis}}\nUwagi AI: {{52.jsonResponse.podsumowanie}}",
+                "status": "nowe zapytania",
+                "due_date_time": false,
+                "start_date_time": false,
+                "notify_all": false,
+                "custom_fields": {
+                    "19536d62-f432-4f52-b8fc-a2ab2d7bfd18": "{{54.merged_liczba_osob}}",
+                    "234795d0-c23b-4f87-9e88-28f92e65d53a": "{{54.merged_telefon}}",
+                    "29799a60-6b9d-4031-98a3-05409a8d36c4": "{{55.clickup_data_eventu}}",
+                    "35ee7b29-5982-401f-8501-f954253031ec": "{{55.clickup_miasto}}",
+                    "8546df9d-b46d-4c45-b491-0f62ce142b6a": "{{55.clickup_pozyskanie}}",
+                    "b65ab644-28a7-45df-b4ba-a1cdd4fba87a": "{{55.clickup_typ_imprezy}}",
+                    "bec02f93-7c1f-44fc-a1dd-669b4401cf3f": "{{55.clickup_pakiet}}",
+                    "d8265463-2ae5-4239-9126-e021a0d121fa": "{{54.merged_email}}",
+                    "da316850-f448-4513-b32a-8baa68c52cc4": "{{54.merged_godzina}}",
+                    "ea3c032c-5ead-4d14-a05f-43b8ff808f04": "{{55.clickup_usluga}}"
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": -633,
+                    "y": 687
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "CLICKUP EVSO (EVSO Event Solutions)",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "clickup2"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "team_id": {
+                            "label": "EVSO"
+                        },
+                        "space_id": {
+                            "label": "EVSO"
+                        },
+                        "folder_id": {
+                            "label": "TESTOWY[Lists: 3]"
+                        },
+                        "list_id": {
+                            "label": "NOWE ZAPYTANIA TESTOWY [Tasks: 115]"
+                        },
+                        "parent_task_id": {
+                            "mode": "chose"
+                        },
+                        "contentType": {
+                            "collapsed": true,
+                            "label": "Plain Text"
+                        },
+                        "assignees": {
+                            "mode": "chose",
+                            "collapsed": true
+                        },
+                        "tags": {
+                            "mode": "chose",
+                            "collapsed": true
+                        },
+                        "status": {
+                            "mode": "edit",
+                            "collapsed": true
+                        },
+                        "priority": {
+                            "mode": "chose",
+                            "collapsed": true,
+                            "label": "Empty"
+                        },
+                        "due_date": {
+                            "collapsed": true
+                        },
+                        "due_date_time": {
+                            "mode": "chose",
+                            "collapsed": true
+                        },
+                        "time_estimate_in": {
+                            "collapsed": true,
+                            "label": "Empty"
+                        },
+                        "start_date": {
+                            "collapsed": true
+                        },
+                        "start_date_time": {
+                            "mode": "chose",
+                            "collapsed": true
+                        },
+                        "notify_all": {
+                            "mode": "chose",
+                            "collapsed": true
+                        },
+                        "custom_fields": {
+                            "nested": {
+                                "35ee7b29-5982-401f-8501-f954253031ec": {
+                                    "mode": "edit"
+                                },
+                                "3cab3547-9db4-4942-95d6-a55d46e0363f": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                },
+                                "5b26ac7f-d79c-4ab6-99d8-9a1e8a85c290": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                },
+                                "8546df9d-b46d-4c45-b491-0f62ce142b6a": {
+                                    "mode": "edit"
+                                },
+                                "8e7ed614-99a0-4512-9fde-d568aa967d86": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                },
+                                "b65ab644-28a7-45df-b4ba-a1cdd4fba87a": {
+                                    "mode": "edit"
+                                },
+                                "bec02f93-7c1f-44fc-a1dd-669b4401cf3f": {
+                                    "mode": "edit"
+                                },
+                                "ea3c032c-5ead-4d14-a05f-43b8ff808f04": {
+                                    "mode": "edit"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:clickup2",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "team_id",
+                        "type": "select",
+                        "label": "Workspace",
+                        "required": true
+                    },
+                    {
+                        "name": "space_id",
+                        "type": "select",
+                        "label": "Space",
+                        "required": true
+                    },
+                    {
+                        "name": "folder_id",
+                        "type": "select",
+                        "label": "Folder",
+                        "required": true
+                    },
+                    {
+                        "name": "list_id",
+                        "type": "select",
+                        "label": "List",
+                        "required": true
+                    },
+                    {
+                        "name": "parent_task_id",
+                        "type": "select",
+                        "label": "Parent Task ID"
+                    },
+                    {
+                        "name": "name",
+                        "type": "text",
+                        "label": "Task Name",
+                        "required": true
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Content Type",
+                        "validate": {
+                            "enum": [
+                                "markdown"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "content",
+                        "type": "text",
+                        "label": "Content"
+                    },
+                    {
+                        "name": "assignees",
+                        "type": "select",
+                        "label": "Assignees",
+                        "multiple": true
+                    },
+                    {
+                        "name": "tags",
+                        "type": "select",
+                        "label": "Tags",
+                        "multiple": true
+                    },
+                    {
+                        "name": "status",
+                        "type": "select",
+                        "label": "Status"
+                    },
+                    {
+                        "name": "priority",
+                        "type": "select",
+                        "label": "Priority",
+                        "validate": {
+                            "enum": [
+                                "urgent",
+                                "high",
+                                "normal",
+                                "low"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "due_date",
+                        "type": "date",
+                        "label": "Due Date"
+                    },
+                    {
+                        "name": "due_date_time",
+                        "type": "boolean",
+                        "label": "Due Date Time",
+                        "required": true
+                    },
+                    {
+                        "name": "time_estimate_in",
+                        "type": "select",
+                        "label": "Estimated Time in",
+                        "validate": {
+                            "enum": [
+                                "m",
+                                "h",
+                                "d"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "start_date",
+                        "type": "date",
+                        "label": "Start Date"
+                    },
+                    {
+                        "name": "start_date_time",
+                        "type": "boolean",
+                        "label": "Start Date Time",
+                        "required": true
+                    },
+                    {
+                        "name": "notify_all",
+                        "type": "boolean",
+                        "label": "Notify All",
+                        "required": true
+                    },
+                    {
+                        "name": "custom_fields",
+                        "type": "collection",
+                        "label": "Custom Fields",
+                        "spec": [
+                            {
+                                "name": "19536d62-f432-4f52-b8fc-a2ab2d7bfd18",
+                                "type": "text",
+                                "label": "ILOŚĆ OSÓB"
+                            },
+                            {
+                                "name": "234795d0-c23b-4f87-9e88-28f92e65d53a",
+                                "type": "text",
+                                "label": "TELEFON"
+                            },
+                            {
+                                "name": "29799a60-6b9d-4031-98a3-05409a8d36c4",
+                                "type": "date",
+                                "label": "DATA EVENTU"
+                            },
+                            {
+                                "name": "35ee7b29-5982-401f-8501-f954253031ec",
+                                "type": "select",
+                                "label": "MIASTO"
+                            },
+                            {
+                                "name": "3cab3547-9db4-4942-95d6-a55d46e0363f",
+                                "type": "select",
+                                "label": "STATUS_OBSŁUGI"
+                            },
+                            {
+                                "name": "5b26ac7f-d79c-4ab6-99d8-9a1e8a85c290",
+                                "type": "select",
+                                "label": "JEDNOSTKA"
+                            },
+                            {
+                                "name": "8546df9d-b46d-4c45-b491-0f62ce142b6a",
+                                "type": "select",
+                                "label": "POZYSKANIE"
+                            },
+                            {
+                                "name": "8e7ed614-99a0-4512-9fde-d568aa967d86",
+                                "type": "select",
+                                "label": "STATUS OBSŁUGI"
+                            },
+                            {
+                                "name": "b65ab644-28a7-45df-b4ba-a1cdd4fba87a",
+                                "type": "select",
+                                "label": "TYP IMPREZY"
+                            },
+                            {
+                                "name": "bec02f93-7c1f-44fc-a1dd-669b4401cf3f",
+                                "type": "select",
+                                "label": "PAKIET"
+                            },
+                            {
+                                "name": "d8265463-2ae5-4239-9126-e021a0d121fa",
+                                "type": "email",
+                                "label": "EMAIL"
+                            },
+                            {
+                                "name": "da316850-f448-4513-b32a-8baa68c52cc4",
+                                "type": "text",
+                                "label": "🕜 GODZINA EVENTU"
+                            },
+                            {
+                                "name": "ea3c032c-5ead-4d14-a05f-43b8ff808f04",
+                                "type": "select",
+                                "label": "USŁUGA"
+                            }
+                        ]
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Task ID"
+                    },
+                    {
+                        "name": "sharing",
+                        "spec": [
+                            {
+                                "name": "public",
+                                "type": "boolean",
+                                "label": "Public"
+                            },
+                            {
+                                "name": "public_share_expires_on",
+                                "type": "date",
+                                "label": "Public Share Expires On"
+                            },
+                            {
+                                "name": "token",
+                                "type": "text",
+                                "label": "Token"
+                            },
+                            {
+                                "name": "seo_optimized",
+                                "type": "boolean",
+                                "label": "SEO Optimized"
+                            },
+                            {
+                                "name": "public_fields",
+                                "type": "array",
+                                "label": "Public Fields"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Sharing"
+                    },
+                    {
+                        "name": "name",
+                        "type": "text",
+                        "label": "Task Name"
+                    },
+                    {
+                        "name": "custom_id",
+                        "type": "text",
+                        "label": "Custom ID"
+                    },
+                    {
+                        "name": "description",
+                        "type": "text",
+                        "label": "Description"
+                    },
+                    {
+                        "name": "text_content",
+                        "type": "text",
+                        "label": "Text Content"
+                    },
+                    {
+                        "name": "custom_item_id",
+                        "type": "text",
+                        "label": "Custom Item ID"
+                    },
+                    {
+                        "name": "date_done",
+                        "type": "date",
+                        "label": "Date Done"
+                    },
+                    {
+                        "name": "markdown_description",
+                        "type": "text",
+                        "label": "Markdown Description"
+                    },
+                    {
+                        "name": "top_level_parent",
+                        "type": "text",
+                        "label": "Top Level Parent"
+                    },
+                    {
+                        "name": "group_assignees",
+                        "type": "array",
+                        "label": "Group Assignees"
+                    },
+                    {
+                        "name": "locations",
+                        "type": "array",
+                        "label": "Locations"
+                    },
+                    {
+                        "name": "subtasks",
+                        "spec": {
+                            "spec": [
+                                "rpc://clickup@2/InterfaceTasks"
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Subtasks"
+                    },
+                    {
+                        "name": "status",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "ID"
+                            },
+                            {
+                                "name": "status",
+                                "type": "text",
+                                "label": "Status"
+                            },
+                            {
+                                "name": "color",
+                                "type": "color",
+                                "label": "Color"
+                            },
+                            {
+                                "name": "type",
+                                "type": "text",
+                                "label": "Type"
+                            },
+                            {
+                                "name": "orderindex",
+                                "type": "number",
+                                "label": "Order Index"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Status"
+                    },
+                    {
+                        "name": "orderindex",
+                        "type": "text",
+                        "label": "Order Index"
+                    },
+                    {
+                        "name": "date_created",
+                        "type": "date",
+                        "label": "Date Created"
+                    },
+                    {
+                        "name": "date_updated",
+                        "type": "date",
+                        "label": "Date Updated"
+                    },
+                    {
+                        "name": "date_closed",
+                        "type": "date",
+                        "label": "Date Closed"
+                    },
+                    {
+                        "name": "archived",
+                        "type": "boolean",
+                        "label": "Archived"
+                    },
+                    {
+                        "name": "creator",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "number",
+                                "label": "User ID"
+                            },
+                            {
+                                "name": "username",
+                                "type": "text",
+                                "label": "Username"
+                            },
+                            {
+                                "name": "color",
+                                "type": "color",
+                                "label": "Color"
+                            },
+                            {
+                                "name": "profilePicture",
+                                "type": "text",
+                                "label": "Profile Picture"
+                            },
+                            {
+                                "name": "email",
+                                "type": "text",
+                                "label": "Email"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Creator"
+                    },
+                    {
+                        "name": "assignees",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "id",
+                                    "type": "number",
+                                    "label": "User ID"
+                                },
+                                {
+                                    "name": "username",
+                                    "type": "text",
+                                    "label": "Username"
+                                },
+                                {
+                                    "name": "color",
+                                    "type": "color",
+                                    "label": "Color"
+                                },
+                                {
+                                    "name": "initials",
+                                    "type": "text",
+                                    "label": "Initials"
+                                },
+                                {
+                                    "name": "profilePicture",
+                                    "type": "url",
+                                    "label": "Profile Picture"
+                                },
+                                {
+                                    "name": "email",
+                                    "type": "email",
+                                    "label": "Email"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Assignees"
+                    },
+                    {
+                        "name": "checklists",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "ID"
+                            },
+                            {
+                                "name": "task_id",
+                                "type": "text",
+                                "label": "Task ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Name"
+                            },
+                            {
+                                "name": "date_created",
+                                "type": "date",
+                                "label": "Date Created"
+                            },
+                            {
+                                "name": "orderindex",
+                                "type": "number",
+                                "label": "Orderindex"
+                            },
+                            {
+                                "name": "creator",
+                                "type": "number",
+                                "label": "Creator"
+                            },
+                            {
+                                "name": "resolved",
+                                "type": "number",
+                                "label": "Resolved"
+                            },
+                            {
+                                "name": "unresolved",
+                                "type": "number",
+                                "label": "Unresolved"
+                            },
+                            {
+                                "name": "items",
+                                "spec": {
+                                    "spec": [
+                                        {
+                                            "name": "id",
+                                            "type": "text",
+                                            "label": "ID"
+                                        },
+                                        {
+                                            "name": "name",
+                                            "type": "text",
+                                            "label": "Name"
+                                        },
+                                        {
+                                            "name": "orderindex",
+                                            "type": "number",
+                                            "label": "Orderindex"
+                                        },
+                                        {
+                                            "name": "assignee",
+                                            "type": "text",
+                                            "label": "Assignee"
+                                        },
+                                        {
+                                            "name": "group_assignee",
+                                            "type": "text",
+                                            "label": "Group Assignee"
+                                        },
+                                        {
+                                            "name": "resolved",
+                                            "type": "boolean",
+                                            "label": "Resolved"
+                                        },
+                                        {
+                                            "name": "parent",
+                                            "type": "text",
+                                            "label": "Parent"
+                                        },
+                                        {
+                                            "name": "date_created",
+                                            "type": "date",
+                                            "label": "Date Created"
+                                        },
+                                        {
+                                            "name": "children",
+                                            "type": "array",
+                                            "label": "Children"
+                                        }
+                                    ],
+                                    "type": "collection"
+                                },
+                                "type": "array",
+                                "label": "Items"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Checklists"
+                    },
+                    {
+                        "name": "watchers",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "id",
+                                    "type": "number",
+                                    "label": "User ID"
+                                },
+                                {
+                                    "name": "username",
+                                    "type": "text",
+                                    "label": "Username"
+                                },
+                                {
+                                    "name": "color",
+                                    "type": "color",
+                                    "label": "Color"
+                                },
+                                {
+                                    "name": "initials",
+                                    "type": "text",
+                                    "label": "Initials"
+                                },
+                                {
+                                    "name": "profilePicture",
+                                    "type": "url",
+                                    "label": "Profile Picture"
+                                },
+                                {
+                                    "name": "email",
+                                    "type": "email",
+                                    "label": "Email"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Watchers"
+                    },
+                    {
+                        "name": "tags",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name"
+                                },
+                                {
+                                    "name": "creator",
+                                    "type": "text",
+                                    "label": "Creator"
+                                },
+                                {
+                                    "name": "tag_fg",
+                                    "type": "color",
+                                    "label": "Tag Fg"
+                                },
+                                {
+                                    "name": "tag_bg",
+                                    "type": "color",
+                                    "label": "Tag Bg"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Tags"
+                    },
+                    {
+                        "name": "parent",
+                        "type": "text",
+                        "label": "Parent"
+                    },
+                    {
+                        "name": "linked_tasks",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "task_id",
+                                    "type": "text",
+                                    "label": "Task ID"
+                                },
+                                {
+                                    "name": "link_id",
+                                    "type": "text",
+                                    "label": "Link ID"
+                                },
+                                {
+                                    "name": "date_created",
+                                    "type": "date",
+                                    "label": "Date Created"
+                                },
+                                {
+                                    "name": "userid",
+                                    "type": "text",
+                                    "label": "User ID"
+                                },
+                                {
+                                    "name": "workspace_id",
+                                    "type": "text",
+                                    "label": "Workspace ID"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Linked Tasks"
+                    },
+                    {
+                        "name": "permission_level",
+                        "type": "text",
+                        "label": "Permission Level"
+                    },
+                    {
+                        "name": "priority",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "ID"
+                            },
+                            {
+                                "name": "priority",
+                                "type": "text",
+                                "label": "Priority"
+                            },
+                            {
+                                "name": "color",
+                                "type": "color",
+                                "label": "Color"
+                            },
+                            {
+                                "name": "orderindex",
+                                "type": "text",
+                                "label": "Order Index"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Priority"
+                    },
+                    {
+                        "name": "due_date",
+                        "type": "date",
+                        "label": "Due Date"
+                    },
+                    {
+                        "name": "start_date",
+                        "type": "date",
+                        "label": "Start Date"
+                    },
+                    {
+                        "name": "points",
+                        "type": "text",
+                        "label": "Points"
+                    },
+                    {
+                        "name": "time_estimate",
+                        "type": "integer",
+                        "label": "Time Estimate (in minutes)"
+                    },
+                    {
+                        "name": "time_spent",
+                        "type": "uinteger",
+                        "label": "Time Spent"
+                    },
+                    {
+                        "name": "list",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "List ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "List Name"
+                            },
+                            {
+                                "name": "access",
+                                "type": "boolean",
+                                "label": "Access"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "List"
+                    },
+                    {
+                        "name": "project",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "Project ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Project Name"
+                            },
+                            {
+                                "name": "hidden",
+                                "type": "boolean",
+                                "label": "Hidden"
+                            },
+                            {
+                                "name": "access",
+                                "type": "boolean",
+                                "label": "Access"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Project"
+                    },
+                    {
+                        "name": "folder",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "Folder ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Folder Name"
+                            },
+                            {
+                                "name": "hidden",
+                                "type": "boolean",
+                                "label": "Hidden"
+                            },
+                            {
+                                "name": "access",
+                                "type": "boolean",
+                                "label": "Access"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Folder"
+                    },
+                    {
+                        "name": "space",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "Space ID"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Space"
+                    },
+                    {
+                        "name": "dependencies",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "task_id",
+                                    "type": "text",
+                                    "label": "Task ID"
+                                },
+                                {
+                                    "name": "depends_on",
+                                    "type": "text",
+                                    "label": "Depends On Task ID"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "number",
+                                    "label": "Type"
+                                },
+                                {
+                                    "name": "date_created",
+                                    "type": "date",
+                                    "label": "Date Created"
+                                },
+                                {
+                                    "name": "userid",
+                                    "type": "text",
+                                    "label": "User ID"
+                                },
+                                {
+                                    "name": "workspace_id",
+                                    "type": "text",
+                                    "label": "Workspace ID"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Dependencies"
+                    },
+                    {
+                        "name": "team_id",
+                        "type": "text",
+                        "label": "Workspace ID"
+                    },
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL"
+                    },
+                    {
+                        "name": "custom_fields_original",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "id",
+                                    "type": "text",
+                                    "label": "ID"
+                                },
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name"
+                                },
+                                {
+                                    "name": "type",
+                                    "type": "text",
+                                    "label": "Type"
+                                },
+                                {
+                                    "name": "type_config",
+                                    "spec": [],
+                                    "type": "collection",
+                                    "label": "Type Config"
+                                },
+                                {
+                                    "name": "date_created",
+                                    "type": "date",
+                                    "label": "Date Created"
+                                },
+                                {
+                                    "name": "hide_from_guests",
+                                    "type": "boolean",
+                                    "label": "Hide From Guests"
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "any",
+                                    "label": "Value"
+                                },
+                                {
+                                    "name": "required",
+                                    "type": "boolean",
+                                    "label": "Required"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Custom Fields (original)"
+                    },
+                    {
+                        "name": "custom_fields",
+                        "label": "Custom Fields",
+                        "type": "collection",
+                        "spec": [
+                            {
+                                "name": "ILOŚĆ OSÓB",
+                                "label": "ILOŚĆ OSÓB",
+                                "type": "any"
+                            },
+                            {
+                                "name": "TELEFON",
+                                "label": "TELEFON",
+                                "type": "any"
+                            },
+                            {
+                                "name": "DATA EVENTU",
+                                "label": "DATA EVENTU",
+                                "type": "date"
+                            },
+                            {
+                                "name": "MIASTO",
+                                "label": "MIASTO",
+                                "type": "number"
+                            },
+                            {
+                                "name": "STATUS_OBSŁUGI",
+                                "label": "STATUS_OBSŁUGI",
+                                "type": "number"
+                            },
+                            {
+                                "name": "JEDNOSTKA",
+                                "label": "JEDNOSTKA",
+                                "type": "number"
+                            },
+                            {
+                                "name": "POZYSKANIE",
+                                "label": "POZYSKANIE",
+                                "type": "number"
+                            },
+                            {
+                                "name": "STATUS OBSŁUGI",
+                                "label": "STATUS OBSŁUGI",
+                                "type": "number"
+                            },
+                            {
+                                "name": "TYP IMPREZY",
+                                "label": "TYP IMPREZY",
+                                "type": "number"
+                            },
+                            {
+                                "name": "PAKIET",
+                                "label": "PAKIET",
+                                "type": "number"
+                            },
+                            {
+                                "name": "EMAIL",
+                                "label": "EMAIL",
+                                "type": "text"
+                            },
+                            {
+                                "name": "🕜 GODZINA EVENTU",
+                                "label": "🕜 GODZINA EVENTU",
+                                "type": "any"
+                            },
+                            {
+                                "name": "USŁUGA",
+                                "label": "USŁUGA",
+                                "type": "number"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu2.make.com",
+        "notes": [
+            {
+                "moduleIds": [
+                    33
+                ],
+                "content": "<p>Mapowanie zmiennych z formularzy (Forminator oraz Wp-form) na ujednolicone zmienne</p>",
+                "isFilterNote": false,
+                "metadata": {
+                    "color": "#9138FE"
+                }
+            },
+            {
+                "moduleIds": [
+                    52
+                ],
+                "content": "<p>Moduł AI, który przetwarza wszystkie informacje i na wyjściu produkuje JSON z uzupełnionymi danymi</p>",
+                "isFilterNote": false,
+                "metadata": {
+                    "color": "#9138FE"
+                }
+            }
+        ]
+    }
+}
